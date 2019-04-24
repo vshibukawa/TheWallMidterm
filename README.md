@@ -1,6 +1,6 @@
 # Midterm Project 'The Wall.'
 
-## Getting Started.
+## Getting Started. Stuff
 
 1. Clone this repository (do not fork)
 3. Remove the git remote: `git remote rm origin`

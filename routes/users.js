@@ -22,24 +22,24 @@ module.exports = (knex) => {
     knex('users').max('id')
       .then((results) => {
         id = results[0].max + 1;        // User Max Number Incrementer, USED FOR DEVELOPMENT ONLY!!!
-        
+
         // Hashed ID and Password --> Need to change DB schema first!!!!!!
         // const hashedid = generateRandomString(6);
         // const hashedPassword = bcrypt.hashSync(password,10);
-        
+
         const userDetailsArr = [{id: id, /*userid: hashedid,*/ first_name: first_name, last_name: last_name , username: username, email: email , password: hashedpassword, avatar: avatar }]
-                
+
         knex('users')
         .insert(userDetailsArr)
         .then(() => console.log(`Person added. First Name: ${userDetailsArr[0].first_name}, Last Name: ${userDetailsArr[0].last_name}, username: ${userDetailsArr[0].username}, avatar: ${userDetailsArr[0].avatar}`))
         .catch((err) => { console.log(err); throw err })
         .finally(() => {
           knex.destroy();
-        }); 
+        });
         req.session.user_id = username; // Currently not posting out to browser cookies
       });
       //
-    });       
+    });
   // login
   router.put("/login", (req, res) => {
     console.log(req.body);
@@ -68,6 +68,8 @@ module.exports = (knex) => {
     req.session.user_id = '';
     return res.status(200);
   });
+
+  // get user's categories
 
   router.get("/", (req, res) => {
     knex

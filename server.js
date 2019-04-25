@@ -13,6 +13,8 @@ const knexConfig  = require("./knexfile");
 const knex        = require("knex")(knexConfig[ENV]);
 const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
+const cookieSession = require("cookie-session");
+const bcrypt = require("bcrypt");
 
 // Seperated Routes for each Resource
 const usersRoutes       = require("./routes/users");
@@ -37,6 +39,13 @@ app.use("/styles", sass({
   outputStyle: 'expanded'
 }));
 app.use(express.static("public"));
+app.use(cookieSession({
+  name: "session",
+  keys: ["hello", "goodbye"],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
 
 // Mount all resource routes
 app.use("/api/users", usersRoutes(knex));

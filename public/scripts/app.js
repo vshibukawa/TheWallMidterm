@@ -102,6 +102,12 @@ function renderResources (inputData) {
 
 $(document).ready(function() {
   // Handle registration showing JS
+  $("#login_button").click(function () {
+    $('#popup_login').css('display', 'block');
+  });
+  $(".login_close_button").click(function () {
+    $('#popup_login').css('display', 'none');
+  })
   $("#register_button").click(function () {
     $('#popup_register').css('display', 'block');
   });
@@ -136,26 +142,75 @@ $(document).ready(function() {
     avatar: 'https://avatars2.githubusercontent.com/u/4898500?s=460&v=4'
   }
 
-  // Handle Form Submit
-  $("form").on("submit", function(event) {
+  // Functions
+  const getResponseError = (XHR)=>{
+    if(XHR.responseJSON){
+      const { error, message } = XHR.responseJSON;
+      return error;
+    }
+    return XHR.responseText;
+  }
+
+  // Handle Register Form Submit
+  $(".register-form").on("submit", function(event) {
     event.preventDefault();
+    $(".alert").slideUp("fast");
+    $(".alert").text("");
     const userInput =  $(this).serialize();
-    console.log(userInput);
       $.ajax({
-        type: 'POST',
+        type: "POST",
         url: "/api/users/register",
         data: userInput
       })
       .done ( () => {
-        console.log(`${userInput}, Tweet uploaded`);
-        $(".tweet-area").val("");
-        $( ".tweet-area" ).trigger( "input", [ "" ] );
-        autoRenderNewTweet();
+        $(".register-form").trigger("reset");
+        $(".reg_close_button").trigger("click");
       })
-      .fail ( () => {
-        console.log("Tweet upload failed.");
+      .fail ( (response) => {
+        $(".alert").slideDown("fast", () => {
+          $(".alert").text(getResponseError(response));
+        });      
+        console.log(response);
       })
   });
+  $(".login-form").on("submit", function(event) {
+    event.preventDefault();
+    $(".alert").slideUp("fast");
+    $(".alert").text("");
+    const userInput =  $(this).serialize();
+      $.ajax({
+        type: "PUT",
+        url: "/api/users/login",
+        data: userInput
+      })
+      .done ( () => {
+        $(".login-form").trigger("reset");
+        $(".login_close_button").trigger("click");
+      })
+      .fail ( (response) => {
+        $(".alert").slideDown("fast", () => {
+          $(".alert").text(getResponseError(response));
+        });      
+        console.log(response);
+      })
+  });
+  $("#logout_button").on("click", function(event) {
+    event.preventDefault();
+    console.log("logout clicked.");
+    $.ajax({
+      type: "POST",
+      url: "/api/users/logout",
+      data: ""
+    })
+    .done ( () => {
+      console.log("Logout Succesful!");
+    })
+    .fail ( (response) => {   
+      console.log("Logout failed!", response);
+    })
+  })
+
+
 
 
   // PROFILE PAGE FORM ON LOAD POPULATE FIELDS

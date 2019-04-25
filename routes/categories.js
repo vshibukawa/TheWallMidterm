@@ -1,7 +1,9 @@
 "use strict";
 
-const express = require('express');
-const router  = express.Router();
+const express     = require('express');
+const url         = require('url');
+const querystring = require('querystring');
+const router      = express.Router();
 
 module.exports = (knex) => {
 
@@ -66,12 +68,29 @@ module.exports = (knex) => {
 
   // get categories
   router.get("/", (req, res) => {
-    knex
-      .select("*")
-      .from("categories")
-      .then((results) => {
-        res.json(results);
-    });
+
+    const parsedUrl = url.parse(req.originalUrl);
+    const parsedQs = querystring.parse(parsedUrl.query);
+    const { description } = parsedQs;
+
+    if(description){
+      knex
+        .select("*")
+        .from("categories")
+        .where('description', 'ilike', `%${description}%`)
+        .then((results) => {
+          res.json(results);
+      });
+
+    }else{
+
+      knex
+        .select("*")
+        .from("categories")
+        .then((results) => {
+          res.json(results);
+      });
+    }
   });
 
   return router;

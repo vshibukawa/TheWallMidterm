@@ -2,13 +2,15 @@
 function createResourceElement (input) {
   // Create variables representing the individual elements in a resource.
   // Resource wrap creation.
+  console.log('input', input);
   let resWrap = $('<div>').addClass('col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12');
 
   //Resource Inner Wrap creation
-  let resInner = $('<div>').addClass('resource_mininmal_single mr-1 m1-1');
+  let resInner = $('<div>').addClass('resource_minimal_single mr-1 m1-1');
 
   //Resource Inner Top creation
   let resInnerHead = $('<div>').addClass('resource_min_top_wrap');
+  let resInnerHeadFullLink = $('<a>').addClass('resFullLink');
   let resInnerHeadTitle = $('<h3>');
   let resInnerHeadLink = $('<a>');
   let resInnerHeadDesc = $('<p>');
@@ -18,8 +20,11 @@ function createResourceElement (input) {
   //Resource Social Wrap
   let resInnerSoc = $('<div>').addClass('resource_minimal_social_wrap row');
   let resInnerSocLikes = $('<div>').addClass('col-3');
+  let resInnerSocLikesTitle = $('<p>');
   let resInnerSocRate = $('<div>').addClass('col-3');
+  let resInnerSocRateTitle = $('<p>');
   let resInnerSocCom = $('<div>').addClass('col-3');
+  let resInnerSocComTitle = $('<p>');
   let resInnerSocUser = $('<div>').addClass('col-3');
 
   // ****************************************************** //
@@ -27,13 +32,46 @@ function createResourceElement (input) {
   // ****************************************************** //
 
   // Create Resource wrapper
+  $(resWrap).append(resInner);
+
+  $(resInner).append(resInnerHead);
+  $(resInnerHead).append(resInnerHeadFullLink);
+  $(resInnerHeadFullLink).attr('src="#"');
+  $(resInnerHeadFullLink).append(resInnerHeadTitle);
+  $(resInnerHeadTitle).text(input['title']);
+  $(resInnerHeadFullLink).append(resInnerHeadLink);
+  $(resInnerHeadLink).attr('href', input['url']).text(input['url']);
+  $(resInnerHeadFullLink).append(resInnerHeadDesc);
+  $(resInnerHeadDesc).text(input['description']);
+  $(resInnerHeadFullLink).append(resInnerHeadCatTitle);
+  $(resInnerHeadCatTitle).text('Category');
+  $(resInnerHeadFullLink).append(resInnerHeadCat);
+  $(resInnerHeadCat).text(input['category_description']);
+
+
+  //Resource Social
+  $(resInner).append(resInnerSoc);
+  $(resInnerSoc).append(resInnerSocLikes);
+  $(resInnerSocLikes).append(resInnerSocLikesTitle);
+  $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
+  $(resInnerSoc).append(resInnerSocRate);
+  $(resInnerSocRate).append(resInnerSocRateTitle);
+  $(resInnerSocRateTitle).text('Rating: ' + input['rate']);
+  $(resInnerSoc).append(resInnerSocCom);
+  $(resInnerSocCom).append(resInnerSocComTitle);
+  $(resInnerSocComTitle).text('Comments: ' + input['comments']);
+  $(resInnerSoc).append(resInnerSocUser);
+  $(resInnerSocUser).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
+
+  return resWrap;
 }
 
 
 
 function renderResources (inputData) {
-  for (let resource of inputData) {
-    $('.main_section_wrap').prepend(createResourceElement(resource))
+  for (let index of inputData) {
+    console.log('stuff', index);
+    $('.main_section_wrap').prepend(createResourceElement(index))
   }
 }
 
@@ -102,6 +140,7 @@ $(document).ready(function() {
       url: 'api/resources/?limit=20'
     })
     .done( (data) => {
+      console.log('data', data);
       renderResources(data);
     })
     .fail( (err) => {

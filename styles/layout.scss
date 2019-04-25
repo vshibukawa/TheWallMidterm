@@ -148,7 +148,7 @@
     }
   }
 
-  .resource_mininmal_single {
+  .resource_minimal_single {
     background-color:#fff;
     padding:20px;
     border: 1px solid #e6e6e6;
@@ -166,6 +166,9 @@
       display:block;
       margin-bottom:10px;
     }
+    a.resFullLink:hover {
+      cursor: pointer;
+    }
     p {
       font-size:0.9em;
     }
@@ -173,5 +176,6 @@
     .resource_minimal_social_wrap {
       font-size: 0.8em;
     }
+
 
   }

@@ -44,13 +44,26 @@ module.exports = (knex) => {
 
   // delete category
   router.delete("/:id", (req, res) => {
-    knex("categories")
-      .where('id', req.params.id)
-      .del()
-      .then(result => {
-        if(result === 1){ return res.status(200).json( {success: 'Deleted' }); }
+    knex
+      .select('res.id', 'cat.description')
+      .from("resources as res")
+      .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+      .groupBy('res.id', 'users.username', 'cat.id')
+      .where('users.token', req.params.userToken)
+      .andWhere('cat.id', req.params.categoryId)
+      .then(results => {
+        const length = results.length;
+        if(length > 0) { return res.status(400).json( {error: `Cannot delete category ${results[0].description} because there are ${length} resources in this category` });}
+
+        knex("categories")
+          .where('id', req.params.id)
+          .del()
+          .then(result => {
+            if(result === 1){ return res.status(200).json( {success: 'Deleted' }); }
+          })
+          .catch(e => res.status(400).json( {e} ));
       })
-      .catch(e => res.status(400).json( {e} ));
+      .catch(e => res.status(400).json( e ));
   });
 
   // get category

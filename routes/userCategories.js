@@ -5,7 +5,7 @@ const router  = express.Router();
 
 module.exports = (knex) => {
 
-  router.get("/:userId/categories/:categoryId/resources", (req, res) => {
+  router.get("/:userToken/categories/:categoryId/resources", (req, res) => {
     knex
       .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
         'res.created_by as created_by_id', 'users.username',
@@ -23,20 +23,20 @@ module.exports = (knex) => {
       .innerJoin('comments as com', 'com.resource_id', 'res.id ')
       .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
       .groupBy('res.id', 'users.username', 'cat.id')
-      .where('users.id', req.params.userId)
+      .where('users.token', req.params.userToken)
       .andWhere('cat.id', req.params.categoryId)
       .then(results => res.json(results[0]))
       .catch(e => res.status(400).json( e ));
   });
 
-  router.get("/:userId/categories", (req, res) => {
+  router.get("/:userToken/categories", (req, res) => {
     knex
       .select('cat.id', 'cat.description')
       .from('categories as cat')
       .innerJoin('resources as res', 'res.category_id', 'cat.id')
       .innerJoin('users', 'users.id', 'res.created_by')
       .innerJoin('resources_references as ref', 'ref.resource_id', 'res.id')
-      .where('users.token', req.params.userId)
+      .where('users.token', req.params.userToken)
       .groupBy('cat.id')
       .orderBy('cat.description')
       .then(results => res.json(results[0]))

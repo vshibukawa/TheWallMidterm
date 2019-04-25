@@ -15,7 +15,7 @@ module.exports = (knex) => {
         const userDetailsArr = [{id: id, first_name: first_name, last_name: last_name , username: username, email: email , password: password, avatar: avatar }]
         knex('users')
           .insert(userDetailsArr)
-          .then(() => console.log(`Person added. First Name: ${userDetailsArr[0]}, Last Name: ${userDetailsArr[0]}, username: ${userDetailsArr[0]}, password: ${userDetailsArr[0]}`))
+          .then(() => console.log(`Person added. First Name: ${userDetailsArr[0].first_name}, Last Name: ${userDetailsArr[0].last_name}, username: ${userDetailsArr[0].username}, avatar: ${userDetailsArr[0].avatar}`))
           .catch((err) => { console.log(err); throw err })
           .finally(() => {
               knex.destroy();

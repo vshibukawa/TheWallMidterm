@@ -2,26 +2,43 @@
 
 const express = require('express');
 const router  = express.Router();
+const bcrypt = require("bcrypt");
+
+function generateRandomString(num) {
+  let text = "";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456879";
+  for (let i = 0; i < num; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
 
 module.exports = (knex) => {
 
   router.post("/register", (req, res) => {
     const {first_name, last_name, username, email, password, avatar} = req.body;
     let id = 0;
-    // User Max Number Incrementer, USED FOR DEVELOPMENT ONLY!!!
+
     knex('users').max('id')
       .then((results) => {
-        id = results[0].max + 1;
-        const userDetailsArr = [{id: id, first_name: first_name, last_name: last_name , username: username, email: email , password: password, avatar: avatar }]
+        id = results[0].max + 1;        // User Max Number Incrementer, USED FOR DEVELOPMENT ONLY!!!
+        
+        // Hashed ID and Password --> Need to change DB schema first!!!!!!
+        // const hashedid = generateRandomString(6);
+        // const hashedPassword = bcrypt.hashSync(password,10);
+        
+        const userDetailsArr = [{id: id, /*userid: hashedid,*/ first_name: first_name, last_name: last_name , username: username, email: email , password: hashedpassword, avatar: avatar }]
+                
         knex('users')
-          .insert(userDetailsArr)
-          .then(() => console.log(`Person added. First Name: ${userDetailsArr[0]}, Last Name: ${userDetailsArr[0]}, username: ${userDetailsArr[0]}, password: ${userDetailsArr[0]}`))
-          .catch((err) => { console.log(err); throw err })
-          .finally(() => {
-              knex.destroy();
-          }); 
+        .insert(userDetailsArr)
+        .then(() => console.log(`Person added. First Name: ${userDetailsArr[0].first_name}, Last Name: ${userDetailsArr[0].last_name}, username: ${userDetailsArr[0].username}, avatar: ${userDetailsArr[0].avatar}`))
+        .catch((err) => { console.log(err); throw err })
+        .finally(() => {
+          knex.destroy();
+        }); 
+        req.session.user_id = username; // Currently not posting out to browser cookies
       });
-    //
+      //
     });       
   // login
   router.put("/login", (req, res) => {

@@ -29,9 +29,8 @@ module.exports = (knex) => {
       .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
       .groupBy('res.id', 'users.username', 'cat.id')
       .where('res.id', req.params.id)
-      .then((results) => {
-        res.json(results);
-    });
+      .then(results => res.json(results))
+      .catch(e => res.status(400).json( {e} ));
   });
 
   router.get("/", (req, res) => {
@@ -67,9 +66,8 @@ module.exports = (knex) => {
         .groupBy('res.id', 'users.username', 'cat.id')
         .orderBy('rate', 'desc')
         .limit(limit)
-        .then((results) => {
-          res.json(results);
-      });
+        .then( results => res.json(results))
+        .catch(e => res.status(400).json( {e} ));
 
     }else{
 
@@ -93,9 +91,8 @@ module.exports = (knex) => {
           .groupBy('res.id', 'users.username', 'cat.id')
           .orderBy('rate', 'desc')
           .limit(limit)
-          .then((results) => {
-            res.json(results);
-        });
+          .then( results => res.json(results))
+          .catch(e => res.status(400).json( {e} ));
       }
     }
   });

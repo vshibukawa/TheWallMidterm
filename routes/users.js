@@ -5,6 +5,24 @@ const router  = express.Router();
 
 module.exports = (knex) => {
 
+  router.post("/register", (req, res) => {
+    const {first_name, last_name, username, email, password, avatar} = req.body;
+    let id = 0;
+    // User Max Number Incrementer, USED FOR DEVELOPMENT ONLY!!!
+    knex('users').max('id')
+      .then((results) => {
+        id = results[0].max + 1;
+        const userDetailsArr = [{id: id, first_name: first_name, last_name: last_name , username: username, email: email , password: password, avatar: avatar }]
+        knex('users')
+          .insert(userDetailsArr)
+          .then(() => console.log(`Person added. First Name: ${userDetailsArr[0]}, Last Name: ${userDetailsArr[0]}, username: ${userDetailsArr[0]}, password: ${userDetailsArr[0]}`))
+          .catch((err) => { console.log(err); throw err })
+          .finally(() => {
+              knex.destroy();
+          }); 
+      });
+    //
+    });       
   // login
   router.put("/login", (req, res) => {
     console.log(req.body);
@@ -42,6 +60,8 @@ module.exports = (knex) => {
         res.json(results);
     });
   });
+
+
 
   return router;
 }

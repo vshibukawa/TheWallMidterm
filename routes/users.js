@@ -27,18 +27,16 @@ module.exports = (knex) => {
         // const hashedid = generateRandomString(6);
         // const hashedPassword = bcrypt.hashSync(password,10);
         
-        const userDetailsArr = [{id: id, /*userid: hashedid,*/ first_name: first_name, last_name: last_name , username: username, email: email , password: hashedpassword, avatar: avatar }]
+        const userDetailsArr = [{id: id, /*userid: hashedid,*/ first_name: first_name, last_name: last_name , username: username, email: email , password: password, avatar: avatar }]
                 
         knex('users')
         .insert(userDetailsArr)
-        .then(() => console.log(`Person added. First Name: ${userDetailsArr[0].first_name}, Last Name: ${userDetailsArr[0].last_name}, username: ${userDetailsArr[0].username}, avatar: ${userDetailsArr[0].avatar}`))
-        .catch((err) => { console.log(err); throw err })
-        .finally(() => {
-          knex.destroy();
-        }); 
-        req.session.user_id = username; // Currently not posting out to browser cookies
+        .then(() => {
+          req.session.user_id = username; // Currently not posting out to browser cookies
+          return res.status(200).send({id, first_name, last_name, username, email, avatar});
+        })
+        .catch((err) => { console.log(err); throw err });
       });
-      //
     });       
   // login
   router.put("/login", (req, res) => {
@@ -56,10 +54,10 @@ module.exports = (knex) => {
         if(password === req.body.user.password){
         // if(bcrypt.compareSync( password, req.body.user.password)){
           req.session.user_id = id;
-          return res.status(200).json({id, username, avatar});
+          return res.status(200).send({id, username, avatar});
         }
 
-        return res.status(400).json({ error: 'Incorrect password'});
+        return res.status(400).send({ error: 'Incorrect password'});
     });
   });
 

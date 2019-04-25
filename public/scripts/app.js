@@ -1,5 +1,11 @@
 $(document).ready(function() {
   // Handle registration showing JS
+  $("#login_button").click(function () {
+    $('#popup_login').css('display', 'block');
+  });
+  $(".login_close_button").click(function () {
+    $('#popup_login').css('display', 'none');
+  })
   $("#register_button").click(function () {
     $('#popup_register').css('display', 'block');
   });
@@ -14,8 +20,8 @@ $(document).ready(function() {
     $('#popup_profile').css('display', 'none');
   })
 
-  // Handle Form Submit
-  $("form").on("submit", function(event) {
+  // Handle Register Form Submit
+  $(".register-form").on("submit", function(event) {
     event.preventDefault();
     const userInput =  $(this).serialize();
     console.log(userInput);
@@ -25,10 +31,9 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( () => {
-        console.log(`${userInput}, Tweet uploaded`);
-        $(".tweet-area").val("");
-        $( ".tweet-area" ).trigger( "input", [ "" ] );
-        autoRenderNewTweet();
+        console.log(`userInput: ${userInput}`);
+        $(".register-form").trigger("reset");
+        $(".reg_close_button").trigger("click");
       })
       .fail ( () => {
         console.log("Tweet upload failed.");

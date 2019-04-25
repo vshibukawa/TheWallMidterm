@@ -42,7 +42,7 @@ module.exports = (knex) => {
       .catch(e => res.status(400).json( {e} ));
   });
 
-  //delete category
+  // delete category
   router.delete("/:id", (req, res) => {
     knex("categories")
       .where('id', req.params.id)

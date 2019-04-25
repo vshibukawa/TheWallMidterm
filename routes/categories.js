@@ -19,9 +19,7 @@ module.exports = (knex) => {
 
         knex("categories")
           .insert(newCategory)
-          .then((results) => {
-            res.json(newCategory);
-        });
+          .then(results =>  res.json(newCategory));
       })
       .catch(e => res.status(400).json( {e} ));
   });
@@ -61,9 +59,8 @@ module.exports = (knex) => {
       .select("*")
       .from("categories")
       .where({id: req.params.id})
-      .then((results) => {
-        res.json(results[0]);
-    });
+      .then(results => res.json(results[0]))
+      .catch(e => res.status(400).json({ error: 'Category not founs'}));
   });
 
   // get categories
@@ -78,18 +75,16 @@ module.exports = (knex) => {
         .select("*")
         .from("categories")
         .where('description', 'ilike', `%${description}%`)
-        .then((results) => {
-          res.json(results);
-      });
+        .then(results => res.json(results))
+        .catch(e => res.status(400).json({ error: 'Categories not founs'}));
 
     }else{
 
       knex
         .select("*")
         .from("categories")
-        .then((results) => {
-          res.json(results);
-      });
+        .then(results => res.json(results))
+        .catch(e => res.status(400).json({ error: 'Categories not founs'}));
     }
   });
 

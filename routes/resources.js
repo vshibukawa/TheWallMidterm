@@ -8,6 +8,31 @@ const router      = express.Router();
 
 module.exports = (knex) => {
 
+  // get resource main data
+  router.get("/:id", (req, res) => {
+
+    knex
+      .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
+        'res.created_by as created_by_id', 'users.username',
+        knex.raw(`sum(rate)/count(ref.user_id) as rate`),
+        knex.raw(`sum(case
+            when liked = true then 1
+            else 0
+            end) as likes`),
+        knex.raw('count(com.id)  as comments'),
+        'cat.id as category_id', 'cat.description as category_description')
+      .from("resources as res")
+      .innerJoin('users', 'users.id', 'res.created_by')
+      .innerJoin('resources_references as ref', 'ref.resource_id', 'res.id')
+      .innerJoin('rates', 'rates.id', 'ref.rate_id ')
+      .innerJoin('comments as com', 'com.resource_id', 'res.id ')
+      .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+      .groupBy('res.id', 'users.username', 'cat.id')
+      .where('res.id', req.params.id)
+      .then(results => res.json(results))
+      .catch(e => res.status(400).json( {e} ));
+  });
+
   router.get("/", (req, res) => {
 
     const parsedUrl = url.parse(req.originalUrl);
@@ -16,38 +41,7 @@ module.exports = (knex) => {
 
     if(search){
 
-      // knex
-      //   .select("*")
-      //   .from("users")
-      //   .then((results) => {
-      //     res.json(results);
-      // });
-
-    }
-
-    if(limit){
-      // select res.id, res.url, res.title, res.description, res.created_on,
-      // res.created_by as created_by_id, users.username,
-      // (sum(rate)/count(ref.user_id)) as rate,
-      // sum(case
-      // when liked = true then 1
-      // else 0
-      // end) as likes, count(com.id) as comments,
-      // cat.id as category_id, cat.description as category_description
-      // from resources res
-      // inner join users
-      // on users.id = res.created_by
-      // inner join resources_references ref
-      // on ref.resource_id = res.id
-      // inner join rates
-      // on rates.id = ref.rate_id
-      // inner join comments com
-      // on com.resource_id = res.id
-      // inner join categories as cat
-      // on cat.id = res.category_id
-      // group by res.id
-      // order by rate desc
-      // limit 2;
+      const searchFor = `%${ search }%`;
 
       knex
         .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
@@ -65,12 +59,41 @@ module.exports = (knex) => {
         .innerJoin('rates', 'rates.id', 'ref.rate_id ')
         .innerJoin('comments as com', 'com.resource_id', 'res.id ')
         .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+        .where('cat.description', 'ilike', searchFor)
+        .orWhere('res.url', 'ilike', searchFor)
+        .orWhere('res.title', 'ilike', searchFor)
+        .orWhere('res.description', 'ilike', searchFor)
         .groupBy('res.id', 'users.username', 'cat.id')
         .orderBy('rate', 'desc')
         .limit(limit)
-        .then((results) => {
-          res.json(results);
-      });
+        .then( results => res.json(results))
+        .catch(e => res.status(400).json( {e} ));
+
+    }else{
+
+      if(limit){
+        knex
+          .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
+            'res.created_by as created_by_id', 'users.username',
+            knex.raw(`sum(rate)/count(ref.user_id) as rate`),
+            knex.raw(`sum(case
+                when liked = true then 1
+                else 0
+                end) as likes`),
+            knex.raw('count(com.id)  as comments'),
+            'cat.id as category_id', 'cat.description as category_description')
+          .from("resources as res")
+          .innerJoin('users', 'users.id', 'res.created_by')
+          .innerJoin('resources_references as ref', 'ref.resource_id', 'res.id')
+          .innerJoin('rates', 'rates.id', 'ref.rate_id ')
+          .innerJoin('comments as com', 'com.resource_id', 'res.id ')
+          .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+          .groupBy('res.id', 'users.username', 'cat.id')
+          .orderBy('rate', 'desc')
+          .limit(limit)
+          .then( results => res.json(results))
+          .catch(e => res.status(400).json( {e} ));
+      }
     }
   });
 

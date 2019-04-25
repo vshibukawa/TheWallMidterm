@@ -91,7 +91,6 @@ function createResourceElement (input, addClasses) {
 
 function callIndividualData(resourceID, element ) {
   const ident = $('#popup_fullDetailed').data('resource_id');
-  console.log(ident);
   $.ajax({
     type: "GET",
     url: "/api/resources/" + ident,
@@ -143,16 +142,6 @@ $(document).ready(function() {
     $('#popup_fullDetailed').css('display', 'none');
 
   });
-
-  let userInfo = {
-    id: 15,
-    first_name: 'Karl',
-    last_name: 'Chvojka',
-    username: 'karl.chvojka',
-    email: 'karl.chvojka@gmail.com',
-    password: 'thingsandstuff',
-    avatar: 'https://avatars2.githubusercontent.com/u/4898500?s=460&v=4'
-  }
 
   // Functions
   const getResponseError = (XHR)=>{
@@ -221,9 +210,6 @@ $(document).ready(function() {
       console.log("Logout failed!", response);
     })
   })
-
-
-
 
   // PROFILE PAGE FORM ON LOAD POPULATE FIELDS
   $(function profilePopulate () {

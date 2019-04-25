@@ -18,5 +18,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   </head>
+  <!-- HIDDEN FORM INCLUDES -->
+  <% include _registerForm %>
+  <% include _profileForm %>
+  <!-- END HIDDEN FORM INCLUDES -->
 
-  <body>
+  <div id="wrapper" class="toggled container-fluid">
+      <!-- Sidebar -->
+    <div class="row">
+      <div id="sidebar-wrapper" class="col-2 collapse navbar-collapse show">
+        <!-- A vertical navbar -->
+        <nav class="navbar bg-light">
+          <a class="navbar-brand" href="#">The Wall</a>
+          <!-- COMMENTED OUT FOR USE LATER -->
+           <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+             <span class="navbar-toggler-icon"></span>
+           </button> -->
+
+          <!-- Links -->
+          <div class="" id="navbarSupportedContent">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link login" href="#">Login</a>
+              </li>
+              <li class="nav-item">
+                <a id="register_button" class="nav-link" href="#">Register</a>
+              </li>
+              <li class="nav-item">
+                <a id="profile_button" class="nav-link" href="#">Profile</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div> <!-- /#sidebar-wrapper -->

@@ -9,7 +9,7 @@ module.exports = (knex) => {
     knex
       .select("*")
       .from("rates")
-      .where({id: req.params.id})
+      .where('id', req.params.id)
       .then(results => res.json(results[0]))
       .catch(e => res.status(400).json( {e} ));
   });

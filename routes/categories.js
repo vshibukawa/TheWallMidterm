@@ -58,7 +58,7 @@ module.exports = (knex) => {
     knex
       .select("*")
       .from("categories")
-      .where({id: req.params.id})
+      .where('id', req.params.id)
       .then(results => res.json(results[0]))
       .catch(e => res.status(400).json({ error: 'Category not founs'}));
   });

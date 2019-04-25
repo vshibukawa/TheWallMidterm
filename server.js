@@ -17,10 +17,13 @@ const cookieSession = require("cookie-session");
 const bcrypt = require("bcrypt");
 
 // Seperated Routes for each Resource
-const usersRoutes       = require("./routes/users");
-const resourcesRoutes   = require("./routes/resources");
-const categoriesRoutes  = require("./routes/categories");
-const ratesRoutes       = require("./routes/rates");
+// const userResourcesRoutes     = require("./routes/userResources");
+const userCategoriesRoutes    = require("./routes/userCategories");
+const usersRoutes             = require("./routes/users");
+// const resourcesCommentsRoutes = require("./routes/resourcesComments");
+const resourcesRoutes         = require("./routes/resources");
+const categoriesRoutes        = require("./routes/categories");
+const ratesRoutes             = require("./routes/rates");
 
 // Load the logger first so all (static) HTTP requests are logged to STDOUT
 // 'dev' = Concise output colored by response status for development use.
@@ -48,7 +51,10 @@ app.use(cookieSession({
 }));
 
 // Mount all resource routes
+// app.use("/api/users/:userId/resources", userResourcesRoutes(knex));
+app.use("/api/users", userCategoriesRoutes(knex));
 app.use("/api/users", usersRoutes(knex));
+// app.use("/api/resources/:resourcesId/comments", resourcesCommentsRoutes(knex));
 app.use("/api/resources", resourcesRoutes(knex));
 app.use("/api/categories", categoriesRoutes(knex));
 app.use("/api/rates", ratesRoutes(knex));

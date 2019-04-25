@@ -4,8 +4,10 @@
   /* GLOBAL STYLES */
   /* ************* */
 
-  @import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:400,900');
+  @import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:400,500,600,700,900');
+  @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
 
+  $h3Font: 'Roboto', sans-serif;
   $headerFont: 'Cinzel Decorative', cursive;
 
   h1, h2, h3, h4, h5, h6 {
@@ -13,7 +15,7 @@
   }
 
   h1 {
-    color: #244751;
+    color: #000000;
   }
 
 
@@ -34,6 +36,7 @@
     transition: all 0.5s ease;
     height:100vh;
     border-right:2px solid #000;
+    background-image: url('../images/darkmetal.jpg');
   }
 
   #navbarSupportedContent {
@@ -47,6 +50,7 @@
   /* Sidebar Styles */
   .sidebar-nav {
     list-style: none;
+    width:100%;
   }
 
   .sidebar-nav li {
@@ -88,9 +92,28 @@
   /* ******************* */
   /* Main Section Styles */
   /* ******************* */
+  #main_section_wrap {
 
+  }
   #page-content-wrapper {
-    margin-top:25px;
+    background-color:#fff;
+    padding-top:25px;
+
+    .main_header {
+      padding:25px;
+      margin-bottom:50px;
+
+      h1 {
+        font-size:75px;
+        text-align:center;
+        color: #fff;
+        font-weight: bold;
+        text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+      }
+      p {
+        text-align:center;
+      }
+    }
   }
 
   #popup_register, #popup_profile {
@@ -123,4 +146,32 @@
         margin-top:5px;
       }
     }
+  }
+
+  .resource_mininmal_single {
+    background-color:#fff;
+    padding:20px;
+    border: 1px solid #e6e6e6;
+    -webkit-box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
+    -moz-box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
+    box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
+
+    h3, h4 {
+      font-family: $h3Font;
+      font-weight:500;
+      text-transform:uppercase;
+    }
+
+    a {
+      display:block;
+      margin-bottom:10px;
+    }
+    p {
+      font-size:0.9em;
+    }
+
+    .resource_minimal_social_wrap {
+      font-size: 0.8em;
+    }
+
   }

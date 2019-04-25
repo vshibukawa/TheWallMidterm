@@ -1,22 +1,20 @@
-$(() => {
-  $.ajax({
-    method: "GET",
-    url: "/api/users"
-  }).done((users) => {
-    for(user of users) {
-      $("<div>").text(`${user.first_name}, ${user.last_name}`).appendTo($("body"));
-    }
-  });;
-});
-
 $(document).ready(function() {
-  // $("#register-button").on("click", function () {
-  //   $(".new-tweet").slideToggle("fast");
-  //   if ($(".new-tweet").is(':visible')) 
-  //   {
-  //     $(".tweet-area").focus();
-  //   }
-  // });
+  // Handle registration showing JS
+  $("#register_button").click(function () {
+    $('#popup_register').css('display', 'block');
+  });
+  $(".reg_close_button").click(function () {
+    $('#popup_register').css('display', 'none');
+  })
+
+  $("#profile_button").click(function () {
+    $('#popup_profile').css('display', 'block');
+  });
+  $(".prof_close_button").click(function () {
+    $('#popup_profile').css('display', 'none');
+  })
+
+  // Handle Form Submit
   $("form").on("submit", function(event) {
     event.preventDefault();
     const userInput =  $(this).serialize();
@@ -34,20 +32,24 @@ $(document).ready(function() {
       })
       .fail ( () => {
         console.log("Tweet upload failed.");
-      })    
-    });
-$(function(){
-  $("#menu-toggle").click(function(e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
+      })
   });
 
-  $(window).resize(function(e) {
-    if($(window).width()<=768){
-      $("#wrapper").removeClass("toggled");
-    }else{
-      $("#wrapper").addClass("toggled");
-    }
-  });
-});
+  // THIS FUNCTION IS FOR THE MENU TOGGLE SPECIFICALLY  //
+  // ONLY CHANGE WHEN ADDING COLLAPSING SIDEBAR STRETCH //
+
+  // $(function(){
+  //   $("#menu-toggle").click(function(e) {
+  //       e.preventDefault();
+  //       $("#wrapper").toggleClass("toggled");
+  //   });
+  //
+  //   $(window).resize(function(e) {
+  //     if($(window).width()<=768){
+  //       $("#wrapper").removeClass("toggled");
+  //     }else{
+  //       $("#wrapper").addClass("toggled");
+  //     }
+  //   });
+  // });
 });

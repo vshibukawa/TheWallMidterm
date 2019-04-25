@@ -2,7 +2,6 @@
 function createResourceElement (input) {
   // Create variables representing the individual elements in a resource.
   // Resource wrap creation.
-  console.log('input', input);
   let resWrap = $('<div>').addClass('col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12');
 
   //Resource Inner Wrap creation
@@ -10,9 +9,8 @@ function createResourceElement (input) {
 
   //Resource Inner Top creation
   let resInnerHead = $('<div>').addClass('resource_min_top_wrap');
-  let resInnerHeadFullLink = $('<a>').addClass('resFullLink');
+  let resInnerHeadLink = $('<a>').addClass('fullLink');
   let resInnerHeadTitle = $('<h3>');
-  let resInnerHeadLink = $('<a>');
   let resInnerHeadDesc = $('<p>');
   let resInnerHeadCatTitle = $('<h4>');
   let resInnerHeadCat = $('<p>');
@@ -35,17 +33,16 @@ function createResourceElement (input) {
   $(resWrap).append(resInner);
 
   $(resInner).append(resInnerHead);
-  $(resInnerHead).append(resInnerHeadFullLink);
-  $(resInnerHeadFullLink).attr('src="#"');
-  $(resInnerHeadFullLink).append(resInnerHeadTitle);
+  $(resInnerHead).append(resInnerHeadTitle);
   $(resInnerHeadTitle).text(input['title']);
-  $(resInnerHeadFullLink).append(resInnerHeadLink);
-  $(resInnerHeadLink).attr('href', input['url']).text(input['url']);
-  $(resInnerHeadFullLink).append(resInnerHeadDesc);
+  $(resInnerHead).append(resInnerHeadLink);
+  $(resInnerHeadLink).attr('href', '#');
+  $(resInnerHeadLink).text(input['url'])
+  $(resInnerHead).append(resInnerHeadDesc);
   $(resInnerHeadDesc).text(input['description']);
-  $(resInnerHeadFullLink).append(resInnerHeadCatTitle);
+  $(resInnerHead).append(resInnerHeadCatTitle);
   $(resInnerHeadCatTitle).text('Category');
-  $(resInnerHeadFullLink).append(resInnerHeadCat);
+  $(resInnerHead).append(resInnerHeadCat);
   $(resInnerHeadCat).text(input['category_description']);
 
 
@@ -63,6 +60,8 @@ function createResourceElement (input) {
   $(resInnerSoc).append(resInnerSocUser);
   $(resInnerSocUser).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
 
+
+  $('.fullLink').data('resource_id', input.id);
   return resWrap;
 }
 
@@ -70,7 +69,6 @@ function createResourceElement (input) {
 
 function renderResources (inputData) {
   for (let index of inputData) {
-    console.log('stuff', index);
     $('.main_section_wrap').prepend(createResourceElement(index))
   }
 }
@@ -82,14 +80,24 @@ $(document).ready(function() {
   });
   $(".reg_close_button").click(function () {
     $('#popup_register').css('display', 'none');
-  })
+  });
 
   $("#profile_button").click(function () {
     $('#popup_profile').css('display', 'block');
   });
   $(".prof_close_button").click(function () {
     $('#popup_profile').css('display', 'none');
-  })
+  });
+
+  $(".main_section_wrap").click('.fullLink', function () {
+    console.log('click');
+    let thisStuff = $(this).data('resource_id');
+    $('#popup_fullDetailed').css('display', 'block');
+  });
+
+  $(".full_close_button").click(function () {
+    $('#popup_fullDetailed').css('display', 'none');
+  });
 
   let userInfo = {
     id: 15,
@@ -140,7 +148,6 @@ $(document).ready(function() {
       url: 'api/resources/?limit=20'
     })
     .done( (data) => {
-      console.log('data', data);
       renderResources(data);
     })
     .fail( (err) => {

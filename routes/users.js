@@ -89,13 +89,12 @@ module.exports = (knex) => {
 
   // logout
   router.post("/logout", (req, res) => {
-    console.log(req.session.user_id);
-    knex("users")
-    .where("token", req.session.user_id)      
-      .update("token", "", ["username", "token"])
-      .then((result) => {
-        req.session = null;
-        return res.status(200).send("Logout Successful.");
+     knex("users")
+     .where("token", req.session.user_id)      
+     .update("token", "", ["username", "token"])
+     .then((result) => {
+       req.session = null;
+       return res.status(200).send("Logout Successful.");
       })
       .catch((err) => {
         return res.status(400).send({ error: "Logout Failed."})

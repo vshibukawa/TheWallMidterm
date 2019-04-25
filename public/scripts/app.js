@@ -16,20 +16,16 @@ function createResourceElement (input) {
 
   // Create Resource wrapper
 }
-
-
-
 function renderResources (inputData) {
   for (let resource of inputData) {
-    $('.main_section_wrap').prepend(createResourceElement(resource))
+    $('.main_section_wrap').prepend(createResourceElement(resource, addClasses))
   }
 }
 
-
-function createResourceElement (input) {
+function createResourceElement (input, addClasses) {
   // Create variables representing the individual elements in a resource.
   // Resource wrap creation.
-  let resWrap = $('<div>').addClass('col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12');
+  let resWrap = $('<div>').addClass('single_wrap ' + addClasses);
 
   //Resource Inner Wrap creation
   let resInner = $('<div>').addClass('resource_minimal_single mr-1 m1-1');
@@ -88,15 +84,27 @@ function createResourceElement (input) {
   $(resInnerSocUser).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
 
 
-  $('.fullLink').data('resource_id', input.id);
+  resInnerHeadLink.data('resource_id', input.id);
   return resWrap;
 }
 
 
+function callIndividualData(resourceID, element ) {
+  const ident = $('#popup_fullDetailed').data('resource_id');
+  console.log(ident);
+  $.ajax({
+    type: "GET",
+    url: "/api/resources/" + ident,
+  })
+  .then(resource => {
+    $('.popupBoxContent').append(createResourceElement(resource[0], 'individualRes'));
+  })
+
+};
 
 function renderResources (inputData) {
   for (let index of inputData) {
-    $('.main_section_wrap').prepend(createResourceElement(index))
+    $('.main_section_wrap').prepend(createResourceElement(index, 'col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12'))
   }
 }
 
@@ -122,14 +130,18 @@ $(document).ready(function() {
     $('#popup_profile').css('display', 'none');
   });
 
-  $(".main_section_wrap").click('.fullLink', function () {
-    console.log('click');
+  $(".main_section_wrap").on('click', '.fullLink', function () {
     let thisStuff = $(this).data('resource_id');
+
     $('#popup_fullDetailed').css('display', 'block');
+    $('#popup_fullDetailed').data('resource_id', thisStuff)
+    callIndividualData(thisStuff, $(this));
   });
 
   $(".full_close_button").click(function () {
+    $('.individualRes').remove();
     $('#popup_fullDetailed').css('display', 'none');
+
   });
 
   let userInfo = {
@@ -169,7 +181,7 @@ $(document).ready(function() {
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
           $(".alert").text(getResponseError(response));
-        });      
+        });
         console.log(response);
       })
   });
@@ -190,7 +202,7 @@ $(document).ready(function() {
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
           $(".alert").text(getResponseError(response));
-        });      
+        });
         console.log(response);
       })
   });
@@ -205,7 +217,7 @@ $(document).ready(function() {
     .done ( () => {
       console.log("Logout Succesful!");
     })
-    .fail ( (response) => {   
+    .fail ( (response) => {
       console.log("Logout failed!", response);
     })
   })

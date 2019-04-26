@@ -24,34 +24,40 @@ module.exports = (knex) => {
       return next ;
     },
 
-    isUserResource: async (req, res, next) =>{
-      const userId = await getUserIdByToken( getUserToken(req, res) );
+    isUserResource: (req, res, next) =>{
+      helpers.getUserToken(req, res)
+        .then(token => helpers.getUserIdByToken( token ))
+        .then(userId => {
 
-      knex
-        .select('user_id')
-        .from("resource")
-        .where('id', req.params.id)
-        .then(results => {
-          if(results.length === 0){ return res.status(400).json( {error: 'resource not found'} )}
-          if(results[0].userId !== userId){ return res.status(400).json( {error: 'Unauthorized'} )}
-          return next;
-        })
-        .catch(e => res.status(400).json( e ));
+          knex
+            .select('user_id')
+            .from("resource")
+            .where('id', req.params.id)
+            .then(results => {
+              if(results.length === 0){ return res.status(400).json( {error: 'resource not found'} )}
+              if(results[0].userId !== userId){ return res.status(400).json( {error: 'Unauthorized'} )}
+              return next;
+            })
+            .catch(e => res.status(400).json( e ));
+        });
     },
 
-    isUserComment: async (req, res, next) =>{
-      const userId = await getUserIdByToken( getUserToken(req, res) );
+    isUserComment: (req, res, next) =>{
 
-      knex
-        .select('user_id')
-        .from("comments")
-        .where('id', req.params.id)
-        .then(results => {
-          if(results.length === 0){ return res.status(400).json( {error: 'comment not found'} )}
-          if(results[0].userId !== userId){ return res.status(400).json( {error: 'Unauthorized'} )}
-          return next;
-        })
-        .catch(e => res.status(400).json( e ));
+      helpers.getUserToken(req, res)
+        .then(token => helpers.getUserIdByToken( token ))
+        .then(userId => {
+          knex
+            .select('user_id')
+            .from("comments")
+            .where('id', req.params.id)
+            .then(results => {
+              if(results.length === 0){ return res.status(400).json( {error: 'comment not found'} )}
+              if(results[0].userId !== userId){ return res.status(400).json( {error: 'Unauthorized'} )}
+              return next;
+            })
+            .catch(e => res.status(400).json( e ));
+        });
     }
   };
 }

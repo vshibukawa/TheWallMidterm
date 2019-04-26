@@ -15,20 +15,22 @@ module.exports = (knex) => {
     },
 
     getUserToken: (req, res) => {
+      return new Promise(function(resolve, reject){
 
-      if(!req.params.userToken || req.params.userToken === '' || !req.session.user_id || req.session.user_id === ''){
-        return { error: 'Please login or register', user: null} ;
-      }
+        if(!req.params.userToken || req.params.userToken === '' || !req.session.user_id || req.session.user_id === ''){
+          reject('Please login or register');
+        }
 
-      let token = undefined;
+        let token = undefined;
 
-      if(req.params.hasOwnProperty('userToken')){
-        token = req.params.userToken;
-      }
-      if(req.session.hasOwnProperty('user_id')){
-        token = req.session.user_id;
-      }
-      return token;
+        if(req.params.hasOwnProperty('userToken')){
+          token = req.params.userToken;
+        }
+        if(req.session.hasOwnProperty('user_id')){
+          token = req.session.user_id;
+        }
+        resolve( token );
+      })
     }
   }
 };

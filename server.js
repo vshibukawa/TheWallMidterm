@@ -17,10 +17,10 @@ const cookieSession = require("cookie-session");
 const bcrypt = require("bcrypt");
 
 // Seperated Routes for each Resource
-const usersRoutes       = require("./routes/users");
-const resourcesRoutes   = require("./routes/resources");
-const categoriesRoutes  = require("./routes/categories");
-const ratesRoutes       = require("./routes/rates");
+const usersRoutes             = require("./routes/users");
+const resourcesRoutes         = require("./routes/resources");
+const categoriesRoutes        = require("./routes/categories");
+const ratesRoutes             = require("./routes/rates");
 
 // Load the logger first so all (static) HTTP requests are logged to STDOUT
 // 'dev' = Concise output colored by response status for development use.

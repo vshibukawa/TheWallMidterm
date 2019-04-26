@@ -9,20 +9,20 @@ const helper      = require("../helpers/userCategories");
 
 module.exports = (knex) => {
 
-  router.get("/:userToken/categories/:categoryId/resources", (req, res) => {
-    helper.getResourcesByCategories: (req, res, req.params.userToken);
+  router.get("/:userToken/categories/:categoryId/resources", middleware.isValidToken,  (req, res) => {
+    helper.getResourcesByCategories (req, res, req.params.userToken);
   });
 
   router.get("/resources", middleware.isLoggedIn, (req, res) => {
-    helper.getResourcesByCategories: (req, res, req.session.user_id);
+    helper.getResourcesByCategories (req, res, req.session.user_id);
   });
 
-  router.get("/:userToken/categories", (req, res) => {
-    helper.getCategories: (req, res, req.params.userToken);
+  router.get("/:userToken/categories", middleware.isValidToken, (req, res) => {
+    helper.getCategories (req, res, req.params.userToken);
   });
 
   router.get("/resources", middleware.isLoggedIn, (req, res) => {
-    helper.getCategories: (req, res, req.session.user_id);
+    helper.getCategories (req, res, req.session.user_id);
   });
 
 
@@ -93,7 +93,7 @@ module.exports = (knex) => {
       .from("categories")
       .where('id', req.params.id)
       .then(results => res.json(results[0]))
-      .catch(e => res.status(400).json({ error: 'Category not founs'}));
+      .catch(e => res.status(400).json({ error: 'Category not found'}));
   });
 
   // get categories
@@ -109,7 +109,7 @@ module.exports = (knex) => {
         .from("categories")
         .where('description', 'ilike', `%${description}%`)
         .then(results => res.json(results))
-        .catch(e => res.status(400).json({ error: 'Categories not founs'}));
+        .catch(e => res.status(400).json({ error: 'Categories not found'}));
 
     }else{
 
@@ -117,7 +117,7 @@ module.exports = (knex) => {
         .select("*")
         .from("categories")
         .then(results => res.json(results))
-        .catch(e => res.status(400).json({ error: 'Categories not founs'}));
+        .catch(e => res.status(400).json({ error: 'Categories not found'}));
     }
   });
 

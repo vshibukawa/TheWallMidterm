@@ -27,7 +27,7 @@ module.exports = (knex) => {
       .andWhere('cat.id', req.params.categoryId)
       .then(results => res.json(results[0]))
       .catch(e => res.status(400).json( e ));
-  },
+  };
 
   getCategories: (req, res, token) => {
     knex

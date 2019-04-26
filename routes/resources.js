@@ -9,8 +9,25 @@ const helpers     = require('../helpers/resources');
 
 module.exports = (knex) => {
 
+  // router.route('/:userToken/resources/:resourceId/comments/:id')
+  //       .all(middleware.isValidToken)
+  //       .delete();
+
+  // router.route('/resources/:resourceId/comments/:id')
+  //       .all(middleware.isLoggedIn)
+  //       .delete();
+
+  // router.route('/:userToken/resources/:resourceId/comments/')
+  //       .delete()
+  //       .post();
+
+  // router.route('/resources/:resourceId/comments/')
+  //       .all(middleware.isLoggedIn)
+  //       .delete()
+  //       .post();
+
   // delete resource
-  router.delete("/:userToken/resources/:id", (req, res) => {
+  router.delete("/:userToken/resources/:id", middleware.isValidToken, (req, res) => {
     helpers.deleteResource(req, res, req.params.userToken, knex);
   });
 
@@ -21,7 +38,7 @@ module.exports = (knex) => {
   });
 
   // update resource
-  router.put("/:userToken/resources/:id", (req, res) => {
+  router.put("/:userToken/resources/:id", middleware.isValidToken, (req, res) => {
     helpers.updateResource(req, res, req.params.userToken, knex);
   });
 
@@ -29,6 +46,16 @@ module.exports = (knex) => {
   router.put("/:id", middleware.isLoggedIn,  (req, res) => {
     helpers.updateResource(req, res, req.session.user_id, knex);
     // res.redirect(`/${req.session.user_id}/resources/${req.params.id}`);
+  });
+
+    // update resource
+  router.post("/:userToken/resources/", middleware.isValidToken,  (req, res) => {
+    helpers.createResource(req, res, req.params.userToken, knex);
+  });
+
+  // update resource
+  router.post("/", middleware.isLoggedIn,  (req, res) => {
+    helpers.createResource(req, res, req.session.user_id, knex);
   });
 
   // get resource main data

@@ -146,7 +146,6 @@ module.exports = (knex) => {
         }
 
         if (changes.username || changes.email) {
-          console.log("Username or email changed.")
           knex
             .select('*')
             .from('users')
@@ -163,12 +162,11 @@ module.exports = (knex) => {
                     return res.status(200).send(result);
                   });
               } else {
-                console.log("there was an error");
+                return res.status(400).send({ error: "Username Or Email already exists. Please try again." })
                 //errors
               } // end of else
             }) // end of then
           } else {
-            console.log("Username or email not changed")
            knex("users")
              .where("token", req.session.user_id)
              .update(changes,['id'])

@@ -108,6 +108,17 @@ function renderResources (inputData) {
 }
 
 $(document).ready(function() {
+  // Set default states for first load
+  $("#register_button").parent().addClass('showElement');
+  $("#login_button").parent().addClass('showElement');
+  $("#logout_button").parent().addClass('hideElement');
+  $("#profile_button").parent().addClass('hideElement');
+
+  $("#register_button").parent().removeClass('hideElement');
+  $("#login_button").parent().removeClass('hideElement');
+  $("#logout_button").parent().removeClass('showElement');
+  $("#profile_button").parent().removeClass('showElement');
+
   // Handle registration showing JS
   $("#login_button").click(function () {
     $('#popup_login').css('display', 'block');
@@ -228,6 +239,15 @@ $(document).ready(function() {
       .done ( (userInfo) => {
         $(".login-form").trigger("reset");
         $(".login_close_button").trigger("click");
+        $("#register_button").parent().addClass('hideElement');
+        $("#login_button").parent().addClass('hideElement');
+        $("#logout_button").parent().addClass('showElement');
+        $("#profile_button").parent().addClass('showElement');
+
+        $("#register_button").parent().removeClass('showElement');
+        $("#login_button").parent().removeClass('showElement');
+        $("#logout_button").parent().removeClass('hideElement');
+        $("#profile_button").parent().removeClass('hideElement');
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
@@ -246,6 +266,15 @@ $(document).ready(function() {
     })
     .done ( () => {
       console.log("Logout Succesful!");
+      $("#register_button").parent().addClass('showElement');
+      $("#login_button").parent().addClass('showElement');
+      $("#profile_button").parent().addClass('hideElement');
+      $("#logout_button").parent().addClass('hideElement');
+
+      $("#register_button").parent().removeClass('hideElement');
+      $("#login_button").parent().removeClass('hideElement');
+      $("#profile_button").parent().removeClass('showElement');
+      $("#logout_button").parent().removeClass('showElement');
     })
     .fail ( (response) => {
       console.log("Logout failed!", response);

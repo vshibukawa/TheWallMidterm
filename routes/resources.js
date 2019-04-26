@@ -20,7 +20,7 @@ module.exports = (knex) => {
 
   // get resource main data
   router.route("/:id")
-        .get( helpers.getReources );
+        .get( helpers.getResources );
 
   router.route('/:id')
         .all( middleware.isLoggedIn )
@@ -33,7 +33,7 @@ module.exports = (knex) => {
 
   router.route('/:id')
         .all( middleware.isLoggedIn )
-        .post( (req, res) => helpers.updateResource(req, res, req.session.user_id, knex));
+        .post( (req, res) => helpers.createResource(req, res, req.session.user_id, knex));
   // // update resource
   // router.post("/", middleware.isLoggedIn,  (req, res) => {
   //   helpers.createResource(req, res, req.session.user_id, knex);

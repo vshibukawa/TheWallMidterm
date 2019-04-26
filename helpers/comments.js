@@ -23,7 +23,7 @@ module.exports = (knex) => {
         return res.status(400).json( {error: 'text is empty'} );
       }
 
-      const userId = await getUserIdByToken( getUserToken(req, res) );
+      const userId = await helpers.getUserIdByToken( helpers.getUserToken(req, res) );
 
       knex("comments").max('id')
         .then(result => result[0].max + 1)

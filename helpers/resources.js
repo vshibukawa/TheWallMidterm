@@ -165,7 +165,7 @@ module.exports = (knex) => {
       .catch(e => res.status(400).json( e ));
   },
 
-  getReources: (req, res) => {
+  getResources: (req, res) => {
 
     knex
       .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
@@ -179,7 +179,7 @@ module.exports = (knex) => {
         'cat.id as category_id', 'cat.description as category_description')
       .from("resources as res")
       .innerJoin('users', 'users.id', 'res.created_by')
-      .innerJoin('resources_references as ref', 'ref.resource_id', 'res.id')
+      .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
       .innerJoin('rates', 'rates.id', 'ref.rate_id ')
       .innerJoin('comments as com', 'com.resource_id', 'res.id ')
       .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
@@ -188,6 +188,50 @@ module.exports = (knex) => {
       .then(results => res.json(results))
       .catch(e => res.status(400).json( {e} ));
   },
+
+  getUsersReources:  (req, res) => {
+    console.log('token: ', req.params.userToken  )
+     helpers.getUserIdByToken( req.params.userToken )
+    .then(userId => {
+
+      knex
+        .select('res.id')
+        .from("resources as res")
+        .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
+        .where(function() { this.where('ref.user_id', userId).orWhere('ref.liked', true) })
+        .then( results => {
+
+          if(results.length === 0){return res.status(200).json( [] );}
+
+          const ids = [];
+          results.forEach(result => ids.push(result.id));
+
+          knex
+            .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
+              'res.created_by as created_by_id', 'users.username',
+              knex.raw(`sum(rate)/count(ref.user_id) as rate`),
+              knex.raw(`sum(case
+                  when liked = true then 1
+                  else 0
+                  end) as likes`),
+              knex.raw('count(com.id)  as comments'),
+              'cat.id as category_id', 'cat.description as category_description')
+            .from("resources as res")
+            .innerJoin('users', 'users.id', 'res.created_by')
+            .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
+            .innerJoin('rates', 'rates.id', 'ref.rate_id ')
+            .innerJoin('comments as com', 'com.resource_id', 'res.id ')
+            .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+            .whereIn('res.id', ids)
+            .groupBy('res.id', 'users.username', 'cat.id')
+            .then(results => res.json(results))
+            .catch(e => res.status(400).json( {e} ));
+        })
+        .catch(e => res.status(400).json( {e} ));
+      });
+    // const userId = await helpers.getUserIdByToken( helpers.getUserToken(req, res) );
+  },
+
 
   getReourcesByQuery: (req, res) => {
 
@@ -211,7 +255,7 @@ module.exports = (knex) => {
           'cat.id as category_id', 'cat.description as category_description')
         .from("resources as res")
         .innerJoin('users', 'users.id', 'res.created_by')
-        .innerJoin('resources_references as ref', 'ref.resource_id', 'res.id')
+        .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
         .innerJoin('rates', 'rates.id', 'ref.rate_id ')
         .innerJoin('comments as com', 'com.resource_id', 'res.id ')
         .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
@@ -240,7 +284,7 @@ module.exports = (knex) => {
             'cat.id as category_id', 'cat.description as category_description')
           .from("resources as res")
           .innerJoin('users', 'users.id', 'res.created_by')
-          .innerJoin('resources_references as ref', 'ref.resource_id', 'res.id')
+          .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
           .innerJoin('rates', 'rates.id', 'ref.rate_id ')
           .innerJoin('comments as com', 'com.resource_id', 'res.id ')
           .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
@@ -386,3 +430,4 @@ module.exports = (knex) => {
 
 // module.exports.deleteResource = deleteResource;
 // module.exports.updateResource = updateResource;
+

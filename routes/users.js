@@ -7,6 +7,7 @@ module.exports = (knex) => {
   const middleware        = require('../middleware/index')(knex);
   const helperCategories  = require("../helpers/userCategories")(knex);
   const helperUsers       = require("../helpers/users")(knex);
+  const helperResources  = require("../helpers/resources")(knex);
 
   router.route('/register')
         .post( helperUsers.register );
@@ -21,6 +22,10 @@ module.exports = (knex) => {
   router.route("/categories")
         .all( middleware.isLoggedIn )
         .get((req, res) => helperCategories.getCategories (req, res, req.session.user_id));
+
+  router.route('/:userToken/resources')
+        .all( middleware.isLoggedIn )
+        .get( helperResources.getUsersReources );
 
   // get user profile info
   router.route("/:id")

@@ -122,7 +122,7 @@
     }
   }
 
-  #popup_register, #popup_profile, #popup_login, #popup_fullDetailed {
+  #popup_addRes, #popup_register, #popup_profile, #popup_login, #popup_fullDetailed {
     display:none;
     top: 0;
    left: 0;
@@ -156,6 +156,50 @@
         margin-top:5px;
       }
     }
+  }
+
+  #popup_fullDetailed > .popupBoxWrapper {
+    width:50%;
+  }
+
+  #popup_fullDetailed {
+
+    .comment_wrap {
+      margin-top:20px;
+      .comment_add_button {
+        text-align:right;
+      }
+      .comm_add_new {
+        display:none;
+        margin-bottom: 10px;
+        textarea {
+          width: 100%;
+          resize: none;
+        }
+      }
+      .comm_title_wrap {
+        border-bottom:1px solid #000000;
+        margin: 0px 0px 10px 0px;
+
+        div.col-10 {
+          padding-left:0px;
+        }
+        div.col-2 {
+          padding-right:0px;
+        }
+      }
+      .comment_single {
+        .comment_single_date {
+          text-align:right;
+
+          .comm_date {
+            margin-right:5px;
+          }
+        }
+      }
+    }
+
+
   }
 
   .resource_minimal_single {

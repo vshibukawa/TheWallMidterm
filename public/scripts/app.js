@@ -1,3 +1,6 @@
+// Global Variables
+let frontuserInfo = {};
+
 
 function createResourceElement (input) {
   // Create variables representing the individual elements in a resource.
@@ -46,7 +49,7 @@ function createResourceElement (input, addClasses) {
   let resInnerSocRateTitle = $('<p>');
   let resInnerSocCom = $('<div>').addClass('col-3');
   let resInnerSocComTitle = $('<p>');
-  let resInnerSocUser = $('<div>').addClass('col-3');
+  let resInnerSocUser = $('<div>').addClass('col-3 user_Controls hideElement');
 
   // ****************************************************** //
   // Appending elements to facilitate the creation of a Resource.
@@ -113,11 +116,13 @@ $(document).ready(function() {
   $("#login_button").parent().addClass('showElement');
   $("#logout_button").parent().addClass('hideElement');
   $("#profile_button").parent().addClass('hideElement');
+  $("#add_button").parent().addClass('hideElement');
 
   $("#register_button").parent().removeClass('hideElement');
   $("#login_button").parent().removeClass('hideElement');
   $("#logout_button").parent().removeClass('showElement');
   $("#profile_button").parent().removeClass('showElement');
+  $("#add_button").parent().removeClass('showElement');
 
   // Handle registration showing JS
   $("#login_button").click(function () {
@@ -131,6 +136,12 @@ $(document).ready(function() {
   });
   $(".reg_close_button").click(function () {
     $('#popup_register').css('display', 'none');
+  });
+  $("#add_button").click(function () {
+    $('#popup_addRes').css('display', 'block');
+  });
+  $(".addRes_close_button").click(function () {
+    $('#popup_addRes').css('display', 'none');
   });
 
   $("#profile_button").on('click', function () {
@@ -169,6 +180,10 @@ $(document).ready(function() {
     callIndividualData(thisStuff, $(this));
   });
 
+  $(".comment_add_button").click(function () {
+    $(".comm_add_new").slideToggle("fast");
+  })
+
   $(".full_close_button").click(function () {
     $('.individualRes').remove();
     $('#popup_fullDetailed').css('display', 'none');
@@ -184,6 +199,21 @@ $(document).ready(function() {
     return XHR.responseText;
   }
 
+  const loginSuccess = function(user, form, closeButton){
+    $(form).trigger("reset");
+    $(closeButton).trigger("click");
+    $('.sidebar-nav .avatar').attr('src', user.avatar);
+    $('.sidebar-nav .avatar').toggle('.no-display');
+  }
+
+  const loginFail = function(response){
+    $(".alert").slideDown("fast", () => $(".alert").text(getResponseError(response)));
+  }
+  const clearUsers = function(){
+    $('.sidebar-nav .avatar').attr('src', '');
+    $('.sidebar-nav .avatar').toggle('.no-display');
+  }
+
   // Handle Register Form Submit
   $(".register-form").on("submit", function(event) {
     event.preventDefault();
@@ -195,16 +225,8 @@ $(document).ready(function() {
         url: "/api/users/register",
         data: userInput
       })
-      .done ( () => {
-        $(".register-form").trigger("reset");
-        $(".reg_close_button").trigger("click");
-      })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .done ( user =>  loginSuccess( user, ".register-form",  ".reg_close_button") )
+      .fail ( response => loginFail( response ));
   });
   $(".profile-form").on("submit", function(event) {
     event.preventDefault();
@@ -226,6 +248,27 @@ $(document).ready(function() {
         console.log(response);
       })
   });
+  $(".addRes-form").on("submit", function(event) {
+    event.preventDefault();
+    console.log("Submit add resource")
+    $(".alert").slideUp("fast");
+    $(".alert").text("");
+    const userInput =  $(this).serialize();
+      $.ajax({
+        type: "POST",
+        url: '/api/resources/:id',
+        data: userInput
+      })
+      .done ( () => {
+        $(".addRes_close_button").trigger("click");
+      })
+      .fail ( (response) => {
+        $(".alert").slideDown("fast", () => {
+          $(".alert").text(getResponseError(response));
+        });
+        console.log(response);
+      })
+  });
   $(".login-form").on("submit", function(event) {
     event.preventDefault();
     $(".alert").slideUp("fast");
@@ -237,24 +280,33 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (userInfo) => {
-        $(".login-form").trigger("reset");
-        $(".login_close_button").trigger("click");
+        frontuserInfo = userInfo.currentUser;
+        loginSuccess( frontuserInfo, ".login-form", ".login_close_button" )
         $("#register_button").parent().addClass('hideElement');
         $("#login_button").parent().addClass('hideElement');
         $("#logout_button").parent().addClass('showElement');
         $("#profile_button").parent().addClass('showElement');
+        $("#add_button").parent().addClass('showElement');
 
         $("#register_button").parent().removeClass('showElement');
         $("#login_button").parent().removeClass('showElement');
         $("#logout_button").parent().removeClass('hideElement');
         $("#profile_button").parent().removeClass('hideElement');
+        $("#add_button").parent().removeClass('hideElement');
+
+        $.ajax({
+          type: 'GET',
+          url: `api/users/${frontuserInfo}/resources/?limit=20`,
+        })
+        .done( (data) => {
+          renderResources(data);
+        })
+        .fail( (err) => {
+          console.log('Failed', err)
+        })
+
       })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .fail ( response => loginFail( response ))
   });
   $("#logout_button").on("click", function(event) {
     event.preventDefault();
@@ -265,15 +317,18 @@ $(document).ready(function() {
       data: ""
     })
     .done ( () => {
+      clearUsers();
       console.log("Logout Succesful!");
       $("#register_button").parent().addClass('showElement');
       $("#login_button").parent().addClass('showElement');
       $("#profile_button").parent().addClass('hideElement');
+      $("#add_button").parent().addClass('hideElement');
       $("#logout_button").parent().addClass('hideElement');
 
       $("#register_button").parent().removeClass('hideElement');
       $("#login_button").parent().removeClass('hideElement');
       $("#profile_button").parent().removeClass('showElement');
+      $("#add_button").parent().removeClass('showElement');
       $("#logout_button").parent().removeClass('showElement');
     })
     .fail ( (response) => {
@@ -283,12 +338,12 @@ $(document).ready(function() {
 
 
   $(function pagePopulate () {
-    let resourcesMain;
     $.ajax({
       type: 'GET',
       url: 'api/resources/?limit=20'
     })
     .done( (data) => {
+      console.log(data);
       renderResources(data);
     })
     .fail( (err) => {

@@ -77,7 +77,7 @@ module.exports = (knex) => {
               .then((result) => {
                 req.session.user_id = result[0].token;
                 console.log(req.session.user_id);
-                return res.status(200).send("Login Successful.");
+                return res.status(200).send({currentUser: result[0].token, info: "Login Successful."});
               });
           } else {
             return res.status(400).send({ error: "Incorrect password. Please try again."});

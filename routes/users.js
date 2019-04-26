@@ -23,23 +23,23 @@ module.exports = (knex) => {
 
     if (first_name === "" || last_name === "" || username === "" || email === "" || password === "" || avatar === "") {
       return res.status(400).send({ error: "Incomplete form submitted. Please check fields and try again." })
-    }     
+    }
     if (password.length < 2) {
       return res.status(400).send({ error: "Password must be at least 8 characters long. Please enter new password and try again." })
-    } 
+    }
     knex.select("*").from("users").where("username", username).orWhere("email", email)
     .then( (result) => {
       if (result.length === 0 ) {
-        
+
         knex('users').max('id')
         .then((results) => {
           id = results[0].max + 1;        // User Max Number Incrementer, USED FOR DEVELOPMENT ONLY!!!
-          
+
           const token = generateRandomString(6);
           // const hashedPassword = bcrypt.hashSync(password,10);
-          
+
           const userDetailsArr = [{id: id, first_name: first_name, last_name: last_name , username: username, email: email , password: password, avatar: avatar, token: token }]
-          
+
           knex('users')
           .insert(userDetailsArr)
           .then(() => {
@@ -58,8 +58,8 @@ module.exports = (knex) => {
         return res.status(400).send({ error: `Bad Request: ${req}` })
       }
 
-    });          
-  });       
+    });
+  });
   // login
   router.put("/login", (req, res) => {
     const {username, password} = req.body;
@@ -67,18 +67,18 @@ module.exports = (knex) => {
       .select("*")
       .from("users")
       .where('username', username)
-      .then((foundUser) => {        
+      .then((foundUser) => {
         if(foundUser.length === 0){ return res.status(400).send({ error: "Username not found. Please enter valid username."}); }
 
         if(password === foundUser[0].password){
         // if(bcrypt.compareSync( password, req.body.user.password)){
           knex("users")
             .where('username', username)
-            .update("token", generateRandomString(6), ['id', 'token'])            
+            .update("token", generateRandomString(6), ['id', 'token'])
             .then((result) => {
               req.session.user_id = result[0].token;
               console.log(req.session.user_id);
-              return res.status(200).send("Login Successful.");
+              return res.status(200).send(result[0]);
             });
         } else {
           return res.status(400).send({ error: "Incorrect password. Please try again."});
@@ -90,7 +90,7 @@ module.exports = (knex) => {
   // logout
   router.post("/logout", (req, res) => {
      knex("users")
-     .where("token", req.session.user_id)      
+     .where("token", req.session.user_id)
      .update("token", "", ["username", "token"])
      .then((result) => {
        req.session = null;

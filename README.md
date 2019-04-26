@@ -30,7 +30,7 @@ Once you have NodeJS and NPM running, follow the instructions below:
 ### Starting
 To start the app run the following command from the main folder (That includes package.json):
 ```
-npm local run
+npm run local
 ```
 
 ## Dependencies

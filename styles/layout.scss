@@ -21,7 +21,7 @@
   .showElement {
     display:block;
   }
-  .hideElement {
+  .hideElement, .no-display {
     display:none;
   }
 
@@ -57,6 +57,16 @@
   .sidebar-nav {
     list-style: none;
     width:100%;
+    .avatar_wrap {
+      overflow:hidden;
+      border-radius: 50%;
+    }
+
+    img.avatar {
+      margin-bottom:10px;
+      height:200px;
+      width:200px;
+    }
   }
 
   .sidebar-nav li {

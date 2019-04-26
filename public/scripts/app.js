@@ -256,10 +256,11 @@ $(document).ready(function() {
     const userInput =  $(this).serialize();
       $.ajax({
         type: "POST",
-        url: '/api/resources/:id',
+        url: '/api/resources/',
         data: userInput
       })
-      .done ( () => {
+      .done ( (result) => {
+        console.log(result);
         $(".addRes_close_button").trigger("click");
       })
       .fail ( (response) => {

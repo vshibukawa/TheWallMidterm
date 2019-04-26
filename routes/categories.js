@@ -4,8 +4,27 @@ const express     = require('express');
 const url         = require('url');
 const querystring = require('querystring');
 const router      = express.Router();
+const middleware  = require('../middleware/index');
+const helper      = require("../helpers/userCategories");
 
 module.exports = (knex) => {
+
+  router.get("/:userToken/categories/:categoryId/resources", (req, res) => {
+    helper.getResourcesByCategories: (req, res, req.params.userToken);
+  });
+
+  router.get("/resources", middleware.isLoggedIn, (req, res) => {
+    helper.getResourcesByCategories: (req, res, req.session.user_id);
+  });
+
+  router.get("/:userToken/categories", (req, res) => {
+    helper.getCategories: (req, res, req.params.userToken);
+  });
+
+  router.get("/resources", middleware.isLoggedIn, (req, res) => {
+    helper.getCategories: (req, res, req.session.user_id);
+  });
+
 
   // create category
   router.post("/", (req, res) => {
@@ -37,7 +56,8 @@ module.exports = (knex) => {
         description: req.body.description
       })
       .then(result => {
-        if(result === 1){ return res.status(200).json( updateCategory ); }
+        if(result === 1){ return res.
+          status(200).json( updateCategory ); }
       })
       .catch(e => res.status(400).json( {e} ));
   });

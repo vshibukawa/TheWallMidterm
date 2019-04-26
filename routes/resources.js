@@ -4,9 +4,32 @@ const express     = require('express');
 const url         = require('url');
 const querystring = require('querystring');
 const router      = express.Router();
-
+const middleware  = require('../middleware/index');
+const helpers     = require('../helpers/resources');
 
 module.exports = (knex) => {
+
+  // delete resource
+  router.delete("/:userToken/resources/:id", (req, res) => {
+    helpers.deleteResource(req, res, req.params.userToken, knex);
+  });
+
+  // delete resource
+  router.delete("/:id", middleware.isLoggedIn, (req, res) => {
+    helpers.deleteResource(req, res, req.session.user_id, knex);
+    // res.redirect(`/${req.session.user_id}/resources/${req.params.id}`);
+  });
+
+  // update resource
+  router.put("/:userToken/resources/:id", (req, res) => {
+    helpers.updateResource(req, res, req.params.userToken, knex);
+  });
+
+  // update resource
+  router.put("/:id", middleware.isLoggedIn,  (req, res) => {
+    helpers.updateResource(req, res, req.session.user_id, knex);
+    // res.redirect(`/${req.session.user_id}/resources/${req.params.id}`);
+  });
 
   // get resource main data
   router.get("/:id", (req, res) => {

@@ -101,6 +101,88 @@ module.exports = (knex) => {
       });
   });
 
+  // get user profile info
+  router.get("/:id", (req, res) => {
+    knex
+      .select("*")
+      .from("users")
+      .where("token", req.session.user_id)
+      .limit(1)
+      .then((result) => {
+        // console.log(result);
+        return res.status(200).send(result);
+      })
+      .catch((err) => {
+        return res.status(400).send({ error: "Cannot find user."})
+      });
+  });
+
+  // update user profile info
+  router.put("/:id", (req, res) => {
+
+    const {first_name, last_name, username, email, password, avatar} = req.body
+
+    if (first_name === "" || last_name === "" || username === "" || email === "" || password === "" || avatar === "") {
+      return res.status(400).send({ error: "Incomplete form submitted. Please check fields and try again." })
+    }
+    if (password.length < 2) {
+      return res.status(400).send({ error: "Password must be at least 8 characters long. Please enter new password and try again." })
+    }
+
+    let changes = {};
+    knex
+      .select('*')
+      .from('users')
+      .where("token", req.session.user_id)
+      .limit(1)
+      .then((result) => {
+        for (let field in req.body) {
+          if (result[0][field] !== req.body[field]) {
+            changes[field] = req.body[field];
+          }
+        }
+        if (changes.length === 0) {
+          return res.status(200).send('No Changes.')
+        }
+
+        if (changes.username || changes.email) {
+          console.log("Username or email changed.")
+          knex
+            .select('*')
+            .from('users')
+            .whereNot("token", req.session.user_id)
+            .andWhere("username", username).orWhere("email", email)
+            .then( (result) => {
+              console.log(result);
+              if (result.length === 0 ) {
+                console.log("No matching users")
+                knex("users")
+                  .where("token", req.session.user_id)
+                  .update(changes,['id'])
+                  .then((result) => {
+                    return res.status(200).send(result);
+                  });
+              } else {
+                console.log("there was an error");
+                //errors
+              } // end of else
+            }) // end of then
+          } else {
+            console.log("Username or email not changed")
+           knex("users")
+             .where("token", req.session.user_id)
+             .update(changes,['id'])
+             .then((result) => {
+               return res.status(200).send(result);
+             });
+          }
+
+      })
+      .catch((err) => {
+        return res.status(400).send({ error: "Cannot find user."})
+      });
+  });
+
   // get user's categories
 
   router.get("/", (req, res) => {

@@ -126,13 +126,25 @@ $(document).ready(function() {
     $('#popup_profile').css('display', 'block');
     let profileInfo = $('#profile_button').data();
 
-    // TO BE UPDATED WHEN WE HAVE A SINGLE USER ROUTE TO PULL INFO FROM.
-    // $('#popup_profile input[name=first_name]').val(userInfo.first_name);
-    // $('#popup_profile input[name=last_name]').val(userInfo.last_name);
-    // $('#popup_profile input[name=username]').val(userInfo.username);
-    // $('#popup_profile input[name=email]').val(userInfo.email);
-    // $('#popup_profile input[name=password]').val(userInfo.password);
-    // $('#popup_profile input[name=avatar]').val(userInfo.avatar);
+    $.ajax({
+      type: 'GET',
+      url: 'api/users/:id'
+    })
+    .done( (data) => {
+      console.log(data);
+      // TO BE UPDATED WHEN WE HAVE A SINGLE USER ROUTE TO PULL INFO FROM.
+      $('#popup_profile input[name=first_name]').val(data[0].first_name);
+      $('#popup_profile input[name=last_name]').val(data[0].last_name);
+      $('#popup_profile input[name=username]').val(data[0].username);
+      $('#popup_profile input[name=email]').val(data[0].email);
+      $('#popup_profile input[name=password]').val(data[0].password);
+      $('#popup_profile input[name=avatar]').val(data[0].avatar);
+    })
+    .fail( (err) => {
+      console.log('Failed', err)
+    })
+
+
   });
   $(".prof_close_button").click(function () {
     $('#popup_profile').css('display', 'none');
@@ -183,6 +195,26 @@ $(document).ready(function() {
         console.log(response);
       })
   });
+  $(".profile-form").on("submit", function(event) {
+    event.preventDefault();
+    $(".alert").slideUp("fast");
+    $(".alert").text("");
+    const userInput =  $(this).serialize();
+      $.ajax({
+        type: "PUT",
+        url: "/api/users/:id",
+        data: userInput
+      })
+      .done ( () => {
+        $(".prof_close_button").trigger("click");
+      })
+      .fail ( (response) => {
+        $(".alert").slideDown("fast", () => {
+          $(".alert").text(getResponseError(response));
+        });
+        console.log(response);
+      })
+  });
   $(".login-form").on("submit", function(event) {
     event.preventDefault();
     $(".alert").slideUp("fast");
@@ -196,7 +228,6 @@ $(document).ready(function() {
       .done ( (userInfo) => {
         $(".login-form").trigger("reset");
         $(".login_close_button").trigger("click");
-        $('#profile_button').data('userToken', userInfo.id);
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
@@ -215,12 +246,12 @@ $(document).ready(function() {
     })
     .done ( () => {
       console.log("Logout Succesful!");
-      $('#profile_button').data('userToken', '');
     })
     .fail ( (response) => {
       console.log("Logout failed!", response);
     })
-  })
+  });
+
 
   $(function pagePopulate () {
     let resourcesMain;

@@ -24,14 +24,14 @@ Once you have NodeJS and NPM running, follow the instructions below:
   - Check the migrations folder to see what gets created in the DB
 6. Run the seed: `npm run knex seed:run`
   - Check the seeds file to see what gets seeded in the DB
-7. Run the server: `npm run local`
-8. Visit `http://localhost:8080/`
 
 ### Starting
 To start the app run the following command from the main folder (That includes package.json):
 ```
 npm run local
 ```
+
+Visit `http://localhost:8080/`
 
 ## Dependencies
 

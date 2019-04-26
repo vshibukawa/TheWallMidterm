@@ -29,19 +29,20 @@ module.exports = (knex) => {
   // router.get("/resources", middleware.isLoggedIn, (req, res) => {
   //   helper.getCategories (req, res, req.session.user_id);
   // });
+  //
+  router.route('/:id')
+        .get( helperCategories.getCategory );
 
   router.route('/:id')
         .all( middleware.isLoggedIn )
         .put( helperCategories.updateCategory )
         .delete( helperCategories.deleteCategory );
-  router.route('/:id')
-        .get( helperCategories.getCategory );
 
+  router.route('/')
+        .get( helperCategories.getCategories );
   router.route('/')
         .all( middleware.isLoggedIn )
         .post( helperCategories.createCategory );
-  router.route('/')
-        .get( helperCategories.getCategories );
 
   return router;
 }

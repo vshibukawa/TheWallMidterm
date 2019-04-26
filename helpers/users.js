@@ -1,6 +1,16 @@
 "use strict";
 
 const express = require('express');
+const bcrypt = require("bcrypt");
+
+function generateRandomString(num) {
+  let text = "";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456879";
+  for (let i = 0; i < num; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
 
 module.exports = (knex) => {
 

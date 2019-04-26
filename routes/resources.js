@@ -1,8 +1,6 @@
 "use strict";
 
 const express     = require('express');
-const url         = require('url');
-const querystring = require('querystring');
 const router      = express.Router();
 
 module.exports = (knex) => {
@@ -20,32 +18,38 @@ module.exports = (knex) => {
         .get( helpersComments.getComments )
         .post( helpersComments.createComment );
 
+  // get resource main data
+  router.route("/:id")
+        .get( helpers.getReources );
+
+  router.route('/:id')
+        .all( middleware.isLoggedIn )
+        .put( (req, res) => helpers.updateResource(req, res, req.session.user_id, knex));
+  // // update resource
+  // router.put("/:id", middleware.isLoggedIn,  (req, res) => {
+  //   helpers.updateResource(req, res, req.session.user_id, knex);
+  //   // res.redirect(`/${req.session.user_id}/resources/${req.params.id}`);
+  // });
+
+  router.route('/:id')
+        .all( middleware.isLoggedIn )
+        .post( (req, res) => helpers.updateResource(req, res, req.session.user_id, knex));
+  // // update resource
+  // router.post("/", middleware.isLoggedIn,  (req, res) => {
+  //   helpers.createResource(req, res, req.session.user_id, knex);
+  // });
+
   router.route('/:id')
         .all( middleware.isLoggedIn )
         .all( middleware.isUserResource )
         .delete((req, res) => helpers.deleteResource(req, res, req.session.user_id, knex))
 
-  // // delete resource
-  // router.delete("/:id", middleware.isLoggedIn, (req, res) => {
-  //   helpers.deleteResource(req, res, req.session.user_id, knex);
-  //   // res.redirect(`/${req.session.user_id}/resources/${req.params.id}`);
-  // });
-
-  // update resource
-  router.put("/:id", middleware.isLoggedIn,  (req, res) => {
-    helpers.updateResource(req, res, req.session.user_id, knex);
-    // res.redirect(`/${req.session.user_id}/resources/${req.params.id}`);
-  });
-
-  // update resource
-  router.post("/", middleware.isLoggedIn,  (req, res) => {
-    helpers.createResource(req, res, req.session.user_id, knex);
-  });
-
-  // get resource main data
-  router.route("/:id")
-        .get( helpers.getReources );
-
+  // // // delete resource
+  // // router.delete("/:id", middleware.isLoggedIn, (req, res) => {
+  // //   helpers.deleteResource(req, res, req.session.user_id, knex);
+  // //   // res.redirect(`/${req.session.user_id}/resources/${req.params.id}`);
+  // // });
+  //
   router.route("/")
         .get( helpers.getReourcesByQuery );
 

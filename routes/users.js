@@ -2,16 +2,6 @@
 
 const express = require('express');
 const router  = express.Router();
-const bcrypt = require("bcrypt");
-
-function generateRandomString(num) {
-  let text = "";
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456879";
-  for (let i = 0; i < num; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
 
 module.exports = (knex) => {
   const middleware        = require('../middleware/index')(knex);

@@ -180,6 +180,10 @@ $(document).ready(function() {
     callIndividualData(thisStuff, $(this));
   });
 
+  $(".comment_add_button").click(function () {
+    $(".comm_add_new").slideToggle("fast");
+  })
+
   $(".full_close_button").click(function () {
     $('.individualRes').remove();
     $('#popup_fullDetailed').css('display', 'none');

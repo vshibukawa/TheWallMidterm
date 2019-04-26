@@ -60,20 +60,21 @@
   }
 
   .sidebar-nav li {
-    text-indent: 20px;
     line-height: 40px;
+    margin:5px 0px;
   }
 
   .sidebar-nav li a {
     display: block;
     text-decoration: none;
-    color: #999999;
+    color: #000;
+    background-image: url('../images/snow.jpg');
+    text-align:center;
   }
 
   .sidebar-nav li a:hover {
     text-decoration: none;
-    color: #fff;
-    background: rgba(255, 255, 255, 0.2);
+    color: #007bff;
   }
 
   .sidebar-nav li a:active, .sidebar-nav li a:focus {
@@ -209,6 +210,10 @@
     -webkit-box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
     -moz-box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
     box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
+
+    .resource_min_top_wrap {
+      overflow-wrap: break-word;
+    }
 
     h3, h4 {
       font-family: $h3Font;

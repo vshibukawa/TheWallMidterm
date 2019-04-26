@@ -77,8 +77,11 @@ module.exports = (knex) => {
               .then((result) => {
                 req.session.user_id = result[0].token;
                 console.log(req.session.user_id);
-                foundUser[0].token = result[0].token;
-                return res.status(200).send(foundUser[0]);
+                const currentUser = {
+                  token: result[0].token,
+                  avatar: foundUser[0].avatar
+                }
+                return res.status(200).send({currentUser, info: "Login Successful."});
               });
           } else {
             return res.status(400).send({ error: "Incorrect password. Please try again."});
@@ -97,6 +100,84 @@ module.exports = (knex) => {
         })
         .catch((err) => {
           return res.status(400).send({ error: "Logout Failed."})
+        });
+    },
+
+    getUser: (req, res) => {
+      knex
+        .select("*")
+        .from("users")
+        .where("token", req.session.user_id)
+        .limit(1)
+        .then((result) => {
+          // console.log(result);
+          return res.status(200).send(result);
+        })
+        .catch((err) => {
+          return res.status(400).send({ error: "Cannot find user."})
+        });
+    },
+
+    updateUser: (req, res) => {
+
+      const {first_name, last_name, username, email, password, avatar} = req.body
+
+      if (first_name === "" || last_name === "" || username === "" || email === "" || password === "" || avatar === "") {
+        return res.status(400).send({ error: "Incomplete form submitted. Please check fields and try again." })
+      }
+      if (password.length < 2) {
+        return res.status(400).send({ error: "Password must be at least 8 characters long. Please enter new password and try again." })
+      }
+
+      let changes = {};
+      knex
+        .select('*')
+        .from('users')
+        .where("token", req.session.user_id)
+        .limit(1)
+        .then((result) => {
+          for (let field in req.body) {
+            if (result[0][field] !== req.body[field]) {
+              changes[field] = req.body[field];
+            }
+          }
+          if (changes.length === 0) {
+            return res.status(200).send('No Changes.')
+          }
+
+          if (changes.username || changes.email) {
+            knex
+              .select('*')
+              .from('users')
+              .whereNot("token", req.session.user_id)
+              .andWhere("username", username).orWhere("email", email)
+              .then( (result) => {
+                console.log(result);
+                if (result.length === 0 ) {
+                  console.log("No matching users")
+                  knex("users")
+                    .where("token", req.session.user_id)
+                    .update(changes,['id'])
+                    .then((result) => {
+                      return res.status(200).send(result);
+                    });
+                } else {
+                  return res.status(400).send({ error: "Username Or Email already exists. Please try again." })
+                  //errors
+                } // end of else
+              }) // end of then
+            } else {
+             knex("users")
+               .where("token", req.session.user_id)
+               .update(changes,['id'])
+               .then((result) => {
+                 return res.status(200).send(result);
+               });
+            }
+
+        })
+        .catch((err) => {
+          return res.status(400).send({ error: "Cannot find user."})
         });
     }
 

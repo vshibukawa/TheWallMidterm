@@ -41,6 +41,7 @@ app.use("/styles", sass({
 app.use(express.static("public"));
 app.use(cookieSession({
   name: "session",
+  httpOnly: false,
   keys: ["hello", "goodbye"],
 
   // Cookie Options

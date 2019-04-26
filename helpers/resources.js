@@ -165,7 +165,7 @@ module.exports = (knex) => {
       .catch(e => res.status(400).json( e ));
   },
 
-  getReources: (req, res) => {
+  getResources: (req, res) => {
 
     knex
       .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',

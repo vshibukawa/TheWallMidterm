@@ -7,6 +7,7 @@ module.exports = (knex) => {
   const middleware        = require('../middleware/index')(knex);
   const helperCategories  = require("../helpers/userCategories")(knex);
   const helperUsers       = require("../helpers/users")(knex);
+  const helperResources  = require("../helpers/resources")(knex);
 
   router.route('/register')
         .post( helperUsers.register );
@@ -21,33 +22,9 @@ module.exports = (knex) => {
         .all( middleware.isLoggedIn )
         .get((req, res) => helperCategories.getCategories (req, res, req.session.user_id));
 
-  // // delete resource
-  // router.delete("/:userToken/resources/:id", middleware.isValidToken, (req, res) => {
-  //   helpers.deleteResource(req, res, req.params.userToken, knex);
-  // });
-  // // update resource
-  // router.put("/:userToken/resources/:id", middleware.isValidToken, (req, res) => {
-  //   helpers.updateResource(req, res, req.params.userToken, knex);
-  // });
-
-  // // update resource
-  // router.post("/:userToken/resources/", middleware.isValidToken,  (req, res) => {
-  //   helpers.createResource(req, res, req.params.userToken, knex);
-  // });
-
-  // get user's categories
-
-
-  // router.get("/", (req, res) => {
-  //   knex
-  //     .select("*")
-  //     .from("users")
-  //     .then((results) => {
-  //       res.json(results);
-  //   });
-  // });
-
-
+  router.route('/:userToken/resources')
+        // .all( middleware.isLoggedIn )
+        .get( helperResources.getUsersReources );
 
   return router;
 }

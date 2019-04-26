@@ -3,13 +3,15 @@ var request         = require("request");
 module.exports = (knex) => {
   return{
 
-    getUserIdByToken: (token) => {
-      knex
-        .select("*")
-        .from("users")
-        .where('token', token)
-        .then( results => results.length !== 1 ? undefined : results[0].id)
-        .catch(e => res.status(400).json( e ));
+    getUserIdByToken:  (token) => {
+      return new Promise(function(resolve, reject) {
+        knex
+          .select("*")
+          .from("users")
+          .where('token', token)
+          .then( results => results.length === 1 ? resolve( results[0].id ) : reject('user not found') )
+          .catch(e => reject( e ));
+      })
     },
 
     getUserToken: (req, res) => {

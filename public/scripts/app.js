@@ -152,6 +152,21 @@ $(document).ready(function() {
     return XHR.responseText;
   }
 
+  const loginSuccess = function(user, form, closeButton){
+    $(form).trigger("reset");
+    $(closeButton).trigger("click");
+    $('.sidebar-nav .avatar').attr('src', user.avatar);
+    $('.sidebar-nav .avatar').toggle('.no-display');
+  }
+
+  const loginFail = function(response){
+    $(".alert").slideDown("fast", () => $(".alert").text(getResponseError(response)));
+  }
+  const clearUsers = function(){
+    $('.sidebar-nav .avatar').attr('src', '');
+    $('.sidebar-nav .avatar').toggle('.no-display');
+  }
+
   // Handle Register Form Submit
   $(".register-form").on("submit", function(event) {
     event.preventDefault();
@@ -163,16 +178,8 @@ $(document).ready(function() {
         url: "/api/users/register",
         data: userInput
       })
-      .done ( () => {
-        $(".register-form").trigger("reset");
-        $(".reg_close_button").trigger("click");
-      })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .done ( user =>  loginSuccess( user, ".register-form",  ".reg_close_button") )
+      .fail ( response => loginFail( response ));
   });
   $(".login-form").on("submit", function(event) {
     event.preventDefault();
@@ -184,16 +191,8 @@ $(document).ready(function() {
         url: "/api/users/login",
         data: userInput
       })
-      .done ( () => {
-        $(".login-form").trigger("reset");
-        $(".login_close_button").trigger("click");
-      })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .done ( user => loginSuccess( user, ".login-form", ".login_close_button" ) )
+      .fail ( response => loginFail( response ));
   });
   $("#logout_button").on("click", function(event) {
     event.preventDefault();
@@ -204,6 +203,7 @@ $(document).ready(function() {
       data: ""
     })
     .done ( () => {
+      clearUsers();
       console.log("Logout Succesful!");
     })
     .fail ( (response) => {

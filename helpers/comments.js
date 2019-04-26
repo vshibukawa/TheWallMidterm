@@ -18,29 +18,31 @@ module.exports = (knex) => {
         .catch(e => res.status(400).json( {e} ));
     },
 
-    createComment: async (req, res) => {
+    createComment: (req, res) => {
       if(!req.body.hasOwnProperty('text')){
         return res.status(400).json( {error: 'text is empty'} );
       }
 
-      const userId = await helpers.getUserIdByToken( helpers.getUserToken(req, res) );
+      helpers.getUserToken(req, res)
+        .then(token => helpers.getUserIdByToken( token ))
+        .then(userId => {
+          knex("comments").max('id')
+            .then(result => result[0].max + 1)
+            .then( max => {
+              const { text } = req.body;
+              const newComment = {
+                id: max,
+                user_id: userId,
+                created_on: new Date(),
+                text,
+                resource_id: req.params.resourceId
+              };
 
-      knex("comments").max('id')
-        .then(result => result[0].max + 1)
-        .then( max => {
-          const { text } = req.body;
-          const newComment = {
-            id: max,
-            user_id: userId,
-            created_on: new Date(),
-            text,
-            resource_id: req.params.resourceId
-          };
-
-          knex('comments').insert({newComment})
-            .then(results =>  res.json(newComment));
+              knex('comments').insert({newComment})
+                .then(results =>  res.json(newComment));
+            })
+            .catch(e => res.status(400).json( e ));
         })
-        .catch(e => res.status(400).json( e ));
     },
 
     getComments: (req, res) => {

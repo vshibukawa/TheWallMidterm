@@ -111,7 +111,7 @@ function createCommentElement(input) {
   $(comSingle).append(comInfoRow);
   $(comInfoRow).append(comInfoUser);
   $(comInfoUser).append(comInfoUserName);
-  $(comInfoUserName).text(input['user_id']);
+  $(comInfoUserName).text(input['username']);
   $(comInfoRow).append(comInfoUserDate);
   $(comInfoUserDate).append(comInfoUserDateVal);
   $(comInfoUserDateVal).append(comInfoUserDateValSpan);
@@ -362,8 +362,7 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
-        console.log(result);
-        // $(".addRes_close_button").trigger("click");
+        $(".addRes_close_button").trigger("click");
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {

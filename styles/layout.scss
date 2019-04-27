@@ -2,16 +2,22 @@
 /* GLOBAL STYLES */
 /* ************* */
 
+  @import url('https://fonts.googleapis.com/css?family=Cinzel:400,500,600,700,900');
   @import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:400,500,600,700,900');
   @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
   @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
 
   $h3Font: 'Roboto', sans-serif;
-  $headerFont: 'Cinzel Decorative', cursive;
+  $headerFont: 'Cinzel', cursive;
   $paraFront: 'Lato', sans-serif;
 
   h1, h2, h3, h4, h5, h6 {
     font-family: $headerFont;
+  }
+
+  button:focus {
+    border:none;
+    outline:none;
   }
 
   h1 {
@@ -50,20 +56,21 @@
       padding:10px;
       background-image: url('../images/darkmetal.jpg');
 
-      h1 {
+      a.navbar-brand {
         font-size:40px;
         line-height:60px;
+        font-family: 'Cinzel Decorative', cursive;
         text-align:center;
         color: #C1C9D9;
-        font-weight: bold;
-        text-shadow: 0px 4px 3px rgba(52, 119, 255, 0.62), 0px 8px 13px rgba(0, 77, 142, 0.1), 0px 18px 23px rgba(13, 141, 208, 0.19);
+        text-shadow: 0px 4px 3px rgba( 152, 219, 255, 0.62), 0px 8px 13px rgba( 152, 219, 255, 0.1), 0px 18px 23px rgba( 152, 219, 255, 0.19);
+
+        img {
+          height:100%;
+          width:60px;
+          border-radius: 50%;
+          box-shadow: 0px 0px 12px rgba( 152, 219, 255, 1);
+          margin-right:10px;
         }
-      p {
-        font-family: $paraFront;
-        text-align:center;
-        color:#ffffff;
-        text-transform:uppercase;
-        color:#C1C9D9;
       }
       .navbar-nav {
         flex-direction: row;
@@ -125,6 +132,7 @@
         margin-top:40px;
         width:100%;
         border-bottom:1px solid #ffffff;
+        text-transform:uppercase;
       }
       margin-bottom:20px;
       ul.navbar-nav {
@@ -275,7 +283,7 @@
     }
 
     h3, h4 {
-      font-family: $h3Font;
+      font-family: $headerFont;
       font-weight:500;
       color:#14486D;
       text-transform: uppercase;
@@ -284,6 +292,7 @@
       padding-bottom:10px;
     }
     h4 {
+      font-family:$h3Font;
       border-bottom:0px;
       padding-bottom:0px;
       margin-bottom:0px;
@@ -308,6 +317,11 @@
       p {
         font-size:12px;
         margin-bottom:0px;
+        display:inline;
+      }
+      button {
+        background:none;
+        border:none;
       }
     }
 
@@ -333,8 +347,18 @@
     }
     .comment_wrap {
       margin-top:20px;
+
       .comment_add_button {
         text-align:right;
+
+        button{
+          border:none;
+          background:#14486D;
+          color:#ffffff;
+          height:auto;
+          padding:5px 10px;
+          width:100%;
+        }
       }
       .comm_add_new {
         display:none;
@@ -348,6 +372,10 @@
         border-bottom:1px solid #000000;
         margin: 0px 0px 10px 0px;
 
+        h3 {
+          border-bottom:0px;
+          margin-bottom:0px;
+        }
         div.col-10 {
           padding-left:0px;
         }
@@ -359,6 +387,11 @@
         border-bottom:1px solid #e6e6e6;
         margin:5px 0px;
 
+        .userName {
+          h4 {
+            font-family:$h3Font;
+          }
+        }
         .comment_single_date {
           text-align:right;
 
@@ -371,3 +404,4 @@
 
 
   }
+  

@@ -392,9 +392,9 @@ module.exports = (knex) => {
 
                       createNewResource(req.body, max, userId, result.id)
                         .then(result => {
-                          // console.log('created resource', result);
+                          console.log('created resource', result);
                           getResourceByID(result.id)
-                            .then( results => res.status(200).json(results) )
+                            .then( results => res.status(200).send(results) )
                             .catch(e => res.status(400).json( e ));
                         })
                         .catch(e => res.status(400).json( e ));
@@ -404,10 +404,10 @@ module.exports = (knex) => {
                   }else{
                     createNewResource(req.body, max, userId, result[0].id)
                       .then( result => {
-                        // console.log('created resource', result);
+                        console.log('created resource', result);
 
                         getResourceByID(result.id)
-                          .then( results => res.status(200).json(results) )
+                          .then( results => res.status(200).send(results) )
                           .catch(e => res.status(400).json( e ));
                       })
                       .catch(e => res.status(400).json( e ));

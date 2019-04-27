@@ -1,6 +1,9 @@
 // Global Variables
 let frontuserInfo = {};
 
+const globalVariables = {
+  limit: 20
+};
 
 function createResourceElement (input) {
   // Create variables representing the individual elements in a resource.
@@ -251,11 +254,33 @@ $(document).ready(function() {
     return XHR.responseText;
   }
 
+  const getUsersCategies = (token)=>{
+    $.ajax('/api/users/categories')
+    .done(categories => {
+      const categoriesArray = [];
+      categories.forEach(category => {
+
+        const $a = $('<a>');
+        $a.text(category.description);
+        $a.data('category_id', category.id);
+        $a.addClass('nav-link');
+        const $li = $('<li>');
+        $li.addClass('nav-item');
+        $li.append($a);
+        categoriesArray.push($li);
+      })
+      $('.sidebar-nav  .navbar-nav.categories').append(categoriesArray);
+    })
+    .fail(response => loginFail( response ));
+  }
+
   const loginSuccess = function(user, form, closeButton){
     $(form).trigger("reset");
     $(closeButton).trigger("click");
     $('.sidebar-nav .avatar').attr('src', user.avatar);
     $('.sidebar-nav .avatar').toggle('.no-display');
+    getUsersCategies(user.token);
+    $('#sidebar-wrapper').data('token', user.token);
   }
 
   const loginFail = function(response){
@@ -264,6 +289,8 @@ $(document).ready(function() {
   const clearUsers = function(){
     $('.sidebar-nav .avatar').attr('src', '');
     $('.sidebar-nav .avatar').toggle('.no-display');
+    $('.sidebar-nav .navbar-nav.categories').empty();
+    $('#sidebar-wrapper').data('token', '');
   }
 
   // Handle Register Form Submit
@@ -374,7 +401,7 @@ $(document).ready(function() {
 
         $.ajax({
           type: 'GET',
-          url: `api/users/${frontuserInfo}/resources/?limit=20`,
+          url: `api/users/${frontuserInfo}/resources/?limit=${globalVariables.limit}`,
         })
         .done( (data) => {
           renderResources(data);
@@ -414,11 +441,30 @@ $(document).ready(function() {
     })
   });
 
+  $('.sidebar-nav  .navbar-nav.categories').on('click', 'a', function(event){
+    event.preventDefault();
+    const category_id = $(this).data('category_id');
+    const user_token = $('#sidebar-wrapper').data('token');
+    $('.main_section_wrap').empty();
+    $.ajax(`api/categories/${category_id}/resources/`)
+    .done( (data) => renderResources(data) )
+    .fail ( response => loginFail( response ));
+  });
+
+  $('.search-form').on('submit', function(event){
+    event.preventDefault();
+    const userInput =  $(this).serialize();
+
+    $('.main_section_wrap').empty();
+    $.ajax(`api/resources/?${userInput}&limit=${globalVariables.limit}`)
+    .done( (data) => renderResources(data) )
+    .fail ( response => loginFail( response ));
+  });
 
   $(function pagePopulate () {
     $.ajax({
       type: 'GET',
-      url: 'api/resources/?limit=20'
+      url: `api/resources/?limit=${globalVariables.limit}`
     })
     .done( (data) => {
       console.log(data);
@@ -428,6 +474,7 @@ $(document).ready(function() {
       console.log('Failed', err)
     })
   })
+
 
   // THIS FUNCTION IS FOR THE MENU TOGGLE SPECIFICALLY  //
   // ONLY CHANGE WHEN ADDING COLLAPSING SIDEBAR STRETCH //

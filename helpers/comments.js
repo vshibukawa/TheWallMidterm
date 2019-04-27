@@ -50,8 +50,9 @@ module.exports = (knex) => {
 
     getComments: (req, res) => {
       knex
-        .select('*')
-        .from("comments")
+        .select('com.id', 'com.user_id', 'users.username', 'com.created_on', 'com.text', 'com.resource_id')
+        .from("comments as com")
+        .innerJoin('users', 'users.id', 'com.user_id')
         .where('resource_id', req.params.resourceId)
         .orderBy('created_on', 'asc')
         .then(results => res.status(200).send( results ))

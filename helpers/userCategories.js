@@ -26,7 +26,7 @@ module.exports = (knex) => {
         .groupBy('res.id', 'users.username', 'cat.id')
         .where('users.token', token)
         .andWhere('cat.id', req.params.categoryId)
-        .then(results => res.json(results[0]))
+        .then(results => res.json(results))
         .catch(e => res.status(400).json( e ));
     },
 
@@ -40,7 +40,7 @@ module.exports = (knex) => {
         .where('users.token', token)
         .groupBy('cat.id')
         .orderBy('cat.description')
-        .then(results => res.json(results[0]))
+        .then(results => res.json(results))
         .catch(e => res.status(400).json( e ));
     }
   }

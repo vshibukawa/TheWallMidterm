@@ -78,7 +78,7 @@ function createResourceElement (input, addClasses) {
   //Resource Social
   $(resInner).append(resInnerSoc);
   $(resInnerSoc).append(resInnerSocLikes);
-  $(resInnerSocLikes).append('<button class="like-mitten"><i class="fas fa-mitten"></i></button>');  
+  $(resInnerSocLikes).append('<button class="like-mitten"><i class="fas fa-mitten"></i></button>');
   $(resInnerSocLikes).append(resInnerSocLikesTitle);
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
@@ -117,7 +117,7 @@ function createCommentElement(input) {
   $(comInfoUserDate).append(comInfoUserDateVal);
   $(comInfoUserDateVal).append(comInfoUserDateValSpan);
   $(comInfoUserDateValSpan).text(toDate);
-  $(comInfoUserDateVal).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
+  // $(comInfoUserDateVal).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
 
   $(comSingle).append(comTextWrap);
   $(comTextWrap).append(comTextInner);
@@ -438,6 +438,8 @@ $(document).ready(function() {
       $("#profile_button").parent().removeClass('showElement');
       $("#add_button").parent().removeClass('showElement');
       $("#logout_button").parent().removeClass('showElement');
+
+      $('.avatar_wrap .avatar').toggle('.no-display');
     })
     .fail ( (response) => {
       console.log("Logout failed!", response);
@@ -465,9 +467,9 @@ $(document).ready(function() {
   });
 
   $(".main_section_wrap").on("click", "button.like-mitten", function (e) {
-    
+
     const resource_id = $('.fullLink',$(this).parent().parent().parent()).data("resource_id");
-    
+
     if ($(this).hasClass("clicked")) {
       $(this).removeClass("clicked");
     } else {

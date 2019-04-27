@@ -107,7 +107,8 @@ module.exports = (knex) => {
             .select('res.id')
             .from("resources as res")
             .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
-            .where(function() { this.where('ref.user_id', userId).orWhere('ref.liked', true) })
+            .where('res.created_by', userId)
+            .orWhere(function() { this.where('ref.user_id', userId).andWhere('ref.liked', true) })
             .then( results => {
 
               if(results.length === 0){return res.status(200).json( [] );}

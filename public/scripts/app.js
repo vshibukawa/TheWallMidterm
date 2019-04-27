@@ -384,9 +384,10 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
+        console.log(result);
         $(".addRes-form").trigger("reset");
         $(".addRes_close_button").trigger("click");
-        pagePopulate();
+        $('.main_section_wrap').prepend(createResourceElement(result[0], 'col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12'))
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {

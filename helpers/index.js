@@ -14,10 +14,10 @@ module.exports = (knex) => {
       })
     },
 
-    getUserToken: (req, res) => {
+    getUserToken: (req, res) => {    
       return new Promise(function(resolve, reject){
 
-        if(!req.params.userToken || req.params.userToken === '' || !req.session.user_id || req.session.user_id === ''){
+        if(!req.session.user_id || req.session.user_id === ''){
           reject('Please login or register');
         }
 

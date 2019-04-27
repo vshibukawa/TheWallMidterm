@@ -168,12 +168,13 @@
       }
     }
   }
-
   #popup_fullDetailed > .popupBoxWrapper {
     width:50%;
   }
 
   #popup_fullDetailed {
+    overflow:auto;
+    padding-bottom:170px;
 
     .comment_wrap {
       margin-top:20px;
@@ -200,6 +201,9 @@
         }
       }
       .comment_single {
+        border-bottom:1px solid #e6e6e6;
+        margin:5px 0px;
+
         .comment_single_date {
           text-align:right;
 

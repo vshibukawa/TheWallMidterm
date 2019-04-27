@@ -14,9 +14,9 @@ module.exports = (knex) => {
         .delete( helpersComments.deleteComment );
 
   router.route('/:resourceId/comments/')
-        .all( middleware.isLoggedIn )
+        // .all( middleware.isLoggedIn )
         .get( helpersComments.getComments )
-        .post( helpersComments.createComment );
+        .post((req, res) => helpersComments.createComment(req, res, req.session.user_id) );
 
   // get resource main data
   router.route("/:id")

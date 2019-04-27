@@ -18,13 +18,12 @@ module.exports = (knex) => {
         .catch(e => res.status(400).json( {e} ));
     },
 
-    createComment: (req, res) => {
-      if(!req.body.hasOwnProperty('text')){
-        return res.status(400).json( {error: 'text is empty'} );
+    createComment: (req, res, token) => {
+      if(!req.body.hasOwnProperty('text') || req.body.text === ""){
+        return res.status(400).json( {error: 'Enter valid comment.'} );
       }
 
-      helpers.getUserToken(req, res)
-        .then(token => helpers.getUserIdByToken( token ))
+      helpers.getUserIdByToken(token)
         .then(userId => {
           knex("comments").max('id')
             .then(result => result[0].max + 1)
@@ -37,9 +36,13 @@ module.exports = (knex) => {
                 text,
                 resource_id: req.params.resourceId
               };
-
-              knex('comments').insert({newComment})
-                .then(results =>  res.json(newComment));
+              console.log('newComments :', newComment)
+              knex('comments')
+                .returning(['id', 'user_id', 'created_on', 'text', 'resource_id'])
+                .insert(newComment)
+                .then(results => {
+                  console.log('completed comment', results);
+                  res.json(newComment)});
             })
             .catch(e => res.status(400).json( e ));
         })
@@ -50,8 +53,9 @@ module.exports = (knex) => {
         .select('*')
         .from("comments")
         .where('resource_id', req.params.resourceId)
-        .then(results => res.status(200).json( results ))
-        .catch(e => res.status(400).json( e ));
+        .orderBy('created_on', 'asc')
+        .then(results => res.status(200).send( results ))
+        .catch(e => res.status(400).send( e ));
     }
   }
 

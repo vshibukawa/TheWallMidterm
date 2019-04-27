@@ -1,6 +1,8 @@
 // Global Variables
 
 function pagePopulate () {
+  getUsersCategies();
+
     $.ajax({
       type: 'GET',
       url: `api/resources/?limit=${globalVariables.limit}`
@@ -64,6 +66,7 @@ function createResourceElement (input, addClasses) {
   let resInnerSocLikesTitle = $('<p>').addClass('likes');
   let resInnerSocRate = $('<div>').addClass('col-3');
   let resInnerSocRateTitle = $('<p>');
+  let resInnerSocRateRater = $('<span>');
   let resInnerSocCom = $('<div>').addClass('col-3');
   let resInnerSocComTitle = $('<p>');
   let resInnerSocUser = $('<div>').addClass('col-3 user_Controls hideElement');
@@ -97,6 +100,17 @@ function createResourceElement (input, addClasses) {
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
   $(resInnerSocRate).append(resInnerSocRateTitle);
+  $(resInnerSocRate).append(resInnerSocRateRater);
+  $(resInnerSocRateRater).append(`
+                                  <select class="form-control selcl" name="rates">
+                                    <option value="2">1</option>
+                                    <option value="3">2</option>
+                                    <option value="4">3</option>
+                                    <option value="5">4</option>
+                                    <option value="6">5</option>
+                                  </select>
+                                `);
+  $(resInnerSocRateTitle).text('Rating: ' + input['rate']);
   let rate = input['rate'];
   if(!input['rate']){ rate = 0; }
   $(resInnerSocRateTitle).text('Rating: ' + rate);
@@ -181,6 +195,20 @@ function renderResources (inputData) {
   }
 }
 
+function pagePopulate () {
+  $.ajax({
+    type: 'GET',
+    url: `api/resources/?limit=${globalVariables.limit}`
+  })
+  .done( (data) => {
+    console.log(data);
+    renderResources(data);
+  })
+  .fail( (err) => {
+    console.log('Failed', err)
+  })
+}
+
 $(document).ready(function() {
   // Set default states for first load
   $("#register_button").parent().addClass('showElement');
@@ -188,12 +216,15 @@ $(document).ready(function() {
   $("#logout_button").parent().addClass('hideElement');
   $("#profile_button").parent().addClass('hideElement');
   $("#add_button").parent().addClass('hideElement');
+  $('#fa-mitten').parent().addClass('hideElement');
+
 
   $("#register_button").parent().removeClass('hideElement');
   $("#login_button").parent().removeClass('hideElement');
   $("#logout_button").parent().removeClass('showElement');
   $("#profile_button").parent().removeClass('showElement');
   $("#add_button").parent().removeClass('showElement');
+  $('#fa-mitten').parent().removeClass('showElement');
 
   // Handle registration showing JS
   $("#login_button").click(function () {
@@ -254,6 +285,10 @@ $(document).ready(function() {
 
   $(".comment_add_button").click(function () {
     $(".comm_add_new").slideToggle("fast");
+
+    if($(".comm_add_new").css('display') === 'block'){
+      $(".comm_add_new textarea").focus();
+    }
   })
 
   $(".full_close_button").click(function () {
@@ -271,24 +306,32 @@ $(document).ready(function() {
     return XHR.responseText;
   }
 
-  const getUsersCategies = (token)=>{
-    $.ajax('/api/users/categories')
-    .done(categories => {
-      const categoriesArray = [];
-      categories.forEach(category => {
+  const getUsersCategies = ()=>{
+    const token = $('#sidebar-wrapper').data('token');
 
-        const $a = $('<a>');
-        $a.text(category.description);
-        $a.data('category_id', category.id);
-        $a.addClass('nav-link');
-        const $li = $('<li>');
-        $li.addClass('nav-item');
-        $li.append($a);
-        categoriesArray.push($li);
+    $('.navbar-nav.categories').empty();
+
+    if(token){
+
+      $.ajax('/api/users/categories')
+      .done(categories => {
+        $('.navbar-nav.categories').empty();
+        const categoriesArray = [];
+        categories.forEach(category => {
+
+          const $a = $('<a>');
+          $a.text(category.description);
+          $a.data('category_id', category.id);
+          $a.addClass('nav-link');
+          const $li = $('<li>');
+          $li.addClass('nav-item');
+          $li.append($a);
+          categoriesArray.push($li);
+        })
+        $('.navbar-nav.categories').append(categoriesArray);
       })
-      $('.sidebar-nav  .navbar-nav.categories').append(categoriesArray);
-    })
-    .fail(response => loginFail( response ));
+      .fail(response => loginFail( response ));
+    }
   }
 
   const loginSuccess = function(user, form, closeButton){
@@ -296,8 +339,8 @@ $(document).ready(function() {
     $(closeButton).trigger("click");
     $('.avatar_wrap .avatar').attr('src', user.avatar);
     $('.avatar_wrap .avatar').toggle('.no-display');
-    getUsersCategies(user.token);
     $('#sidebar-wrapper').data('token', user.token);
+    getUsersCategies();
   }
 
   const loginFail = function(response){
@@ -306,7 +349,7 @@ $(document).ready(function() {
   const clearUsers = function(){
     $('.sidebar-nav .avatar').attr('src', '');
     $('.sidebar-nav .avatar').toggle('.no-display');
-    $('.sidebar-nav .navbar-nav.categories').empty();
+    $('.navbar-nav.categories').empty();
     $('#sidebar-wrapper').data('token', '');
   }
 
@@ -355,9 +398,10 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
+        console.log(result);
         $(".addRes-form").trigger("reset");
         $(".addRes_close_button").trigger("click");
-        pagePopulate();
+        $('.main_section_wrap').prepend(createResourceElement(result[0], 'col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12'))
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
@@ -380,6 +424,7 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
+        $(".addComment-form").trigger("reset");
         $(".comment_add_button button").trigger("click");
         $('.comments_wrap').prepend(createCommentElement(result));
         console.log(result);
@@ -412,12 +457,14 @@ $(document).ready(function() {
         $("#logout_button").parent().addClass('showElement');
         $("#profile_button").parent().addClass('showElement');
         $("#add_button").parent().addClass('showElement');
+        $('#fa-mitten').parent().addClass('showElement');
 
         $("#register_button").parent().removeClass('showElement');
         $("#login_button").parent().removeClass('showElement');
         $("#logout_button").parent().removeClass('hideElement');
         $("#profile_button").parent().removeClass('hideElement');
         $("#add_button").parent().removeClass('hideElement');
+        $('#fa-mitten').parent().removeClass('hideElement');
         $('.main_section_wrap').empty();
 
         $.ajax({
@@ -450,21 +497,27 @@ $(document).ready(function() {
       $("#profile_button").parent().addClass('hideElement');
       $("#add_button").parent().addClass('hideElement');
       $("#logout_button").parent().addClass('hideElement');
+      $('#fa-mitten').parent().addClass('hideElement');
 
       $("#register_button").parent().removeClass('hideElement');
       $("#login_button").parent().removeClass('hideElement');
       $("#profile_button").parent().removeClass('showElement');
       $("#add_button").parent().removeClass('showElement');
       $("#logout_button").parent().removeClass('showElement');
+      $('#fa-mitten').parent().removeClass('showElement');
+      $('.main_section_wrap').empty();
+
+
 
       $('.avatar_wrap .avatar').toggle('.no-display');
+      pagePopulate();
     })
     .fail ( (response) => {
       console.log("Logout failed!", response);
     })
   });
 
-  $('.sidebar-nav  .navbar-nav.categories').on('click', 'a', function(event){
+  $('.navbar-nav.categories').on('click', 'a', function(event){
     event.preventDefault();
     const category_id = $(this).data('category_id');
     const user_token = $('#sidebar-wrapper').data('token');
@@ -482,6 +535,7 @@ $(document).ready(function() {
     $.ajax(`api/resources/?${userInput}&limit=${globalVariables.limit}`)
     .done( (data) => renderResources(data) )
     .fail ( response => loginFail( response ));
+    $('.search-form').trigger("reset");
   });
 
 
@@ -506,9 +560,35 @@ $(document).ready(function() {
 
   });
 
+  $(".main_section_wrap").on("change", "select", function (e) {
 
+    console.log("Selecting!", this.value);
+
+    const resource_id = $('.fullLink',$(this).parent().parent().parent().parent()).data("resource_id");
+
+    $.ajax({
+      type: 'PUT',
+      url: `api/resources/${resource_id}`,
+      data: {"rate_id": this.value}
+    })
+    .done( response => {
+      console.log(response);
+      $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
+    });
+
+
+
+
+    // $('select').on('change', function() {
+    //   alert( this.value );
+    // });
+  });
+
+
+
+
+  // initial page populate at first load
   pagePopulate();
-
 
 
   // THIS FUNCTION IS FOR THE MENU TOGGLE SPECIFICALLY  //

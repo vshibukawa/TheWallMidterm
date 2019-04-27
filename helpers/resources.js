@@ -107,7 +107,8 @@ module.exports = (knex) => {
             .select('res.id')
             .from("resources as res")
             .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
-            .where(function() { this.where('ref.user_id', userId).orWhere('ref.liked', true) })
+            .where('res.created_by', userId)
+            .orWhere(function() { this.where('ref.user_id', userId).andWhere('ref.liked', true) })
             .then( results => {
 
               if(results.length === 0){return res.status(200).json( [] );}
@@ -392,9 +393,9 @@ module.exports = (knex) => {
 
                       createNewResource(req.body, max, userId, result.id)
                         .then(result => {
-                          // console.log('created resource', result);
+                          console.log('created resource', result);
                           getResourceByID(result.id)
-                            .then( results => res.status(200).json(results) )
+                            .then( results => res.status(200).send(results) )
                             .catch(e => res.status(400).json( e ));
                         })
                         .catch(e => res.status(400).json( e ));
@@ -404,10 +405,10 @@ module.exports = (knex) => {
                   }else{
                     createNewResource(req.body, max, userId, result[0].id)
                       .then( result => {
-                        // console.log('created resource', result);
+                        console.log('created resource', result);
 
                         getResourceByID(result.id)
-                          .then( results => res.status(200).json(results) )
+                          .then( results => res.status(200).send(results) )
                           .catch(e => res.status(400).json( e ));
                       })
                       .catch(e => res.status(400).json( e ));

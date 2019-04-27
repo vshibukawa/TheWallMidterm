@@ -9,7 +9,7 @@ module.exports = (knex) => {
       if(!req.session.user_id || req.session.user_id === ''){
         return res.status(400).json( {error: 'Please login or register'} );
       }
-      return next ;
+      return next() ;
     },
 
     isValidToken: (req, res, next) => {
@@ -21,7 +21,7 @@ module.exports = (knex) => {
         return res.status(400).json( {error: 'Invalid Token'} );
       }
 
-      return next ;
+      return next() ;
     },
 
     isUserResource: (req, res, next) =>{
@@ -36,7 +36,7 @@ module.exports = (knex) => {
             .then(results => {
               if(results.length === 0){ return res.status(400).json( {error: 'resource not found'} )}
               if(results[0].userId !== userId){ return res.status(400).json( {error: 'Unauthorized'} )}
-              return next;
+              return next();
             })
             .catch(e => res.status(400).json( e ));
         });
@@ -54,7 +54,7 @@ module.exports = (knex) => {
             .then(results => {
               if(results.length === 0){ return res.status(400).json( {error: 'comment not found'} )}
               if(results[0].userId !== userId){ return res.status(400).json( {error: 'Unauthorized'} )}
-              return next;
+              return next();
             })
             .catch(e => res.status(400).json( e ));
         });

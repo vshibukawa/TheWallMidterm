@@ -19,9 +19,14 @@ module.exports = (knex) => {
   router.route('/logout')
         .post( helperUsers.logout );
 
+  // router.route("/:userToken/categories")
+  //       .all( middleware.isValidToken )
+  //       .get((req, res) => helperCategories.getCategories (req, res, req.params.userToken));
+
   router.route("/categories")
         .all( middleware.isLoggedIn )
-        .get((req, res) => helperCategories.getCategories (req, res, req.session.user_id));
+        .get((req, res) => helperCategories.getCategories (req, res, req.session.user_id))
+        // .get((req, res) => helperCategories.getCategories (req, res, req.session.user_id));
 
   router.route('/:userToken/resources')
         .all( middleware.isLoggedIn )

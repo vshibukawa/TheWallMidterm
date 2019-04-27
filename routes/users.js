@@ -29,7 +29,7 @@ module.exports = (knex) => {
         // .get((req, res) => helperCategories.getCategories (req, res, req.session.user_id));
 
   router.route('/:userToken/resources')
-        .all( middleware.isLoggedIn )
+        .all( middleware.isValidToken )
         .get( helperResources.getUsersReources );
 
   // get user profile info

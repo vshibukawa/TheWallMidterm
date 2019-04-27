@@ -1,10 +1,33 @@
-<div id="popup_addRes" class="popupModal popup-display">
-  <div class="popupBoxWrapper">
-    <div class="popupBoxContent">
-      <h3 class="addRes-button">Add Resource</h3>
-      <button class="addRes_close_button">Close</button>
+<div id="popup_addRes" class="popupModal popup-display container">
+  <div class="popupBoxWrapper row">
+    <div class="popupBoxContent col-12">
+      <div class="row">
+        <div class="col-6 form_header_wrap">
+          <h3 class="addRes-button">Add Resource</h3>
+        </div>
+        <div class="col-6 close_Wrap d-flex flex-row-reverse">
+          <button class="addRes_close_button">Close</button>
+        </div>
+      </div>
       <div class="alert alert-warning" role="alert">Test Error
         </div>
+<<<<<<< HEAD
+      <div class="popup_form_wrap row">
+        <div class="col-12">
+          <form class="addRes-form">
+              <label for="title"><b>Title</b></label>
+              <input type="text" placeholder="Enter Resource Title" name="title">
+              <label for="description"><b>Description</b></label>
+              <input type="text" placeholder="Enter Resource Description" name="description">
+              <label for="url"><b>URL</b></label>
+              <input type="text" placeholder="Enter Resource URL" name="url">
+              <label for="category"><b>Category</b></label>
+              <input type="text" placeholder="Enter Category" name="category_id">
+              <input class="submit_button" type="submit" value="Add Resource">
+          </form>
+        </div>
+      </div>
+=======
       <form class="addRes-form">
           <label for="title"><b>Title</b></label>
           <input type="text" placeholder="Enter Resource Title" name="title">
@@ -16,6 +39,7 @@
           <input type="text" placeholder="Enter Category" name="category_description">
           <input class="submit_button" type="submit" value="Add Resource">
       </form>
+>>>>>>> da463e215e1aea359db42464fdcb0517c437e3d3
     </div>
   </div>
 </div>

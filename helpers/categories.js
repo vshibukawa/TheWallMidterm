@@ -6,6 +6,26 @@ const router  = express.Router();
 module.exports = (knex) => {
   const helpers = require('../helpers/index')(knex);
 
+  const createNewCategory = (description) => {
+    return new Promise(function(resolve, reject){
+
+      knex('categories').max('id')
+        .then(result => result[0].max + 1)
+        .then( max => {
+          const newCategory = {
+              id: max,
+              description: description
+            };
+
+          knex("categories")
+            .insert(newCategory)
+            .returning('*')
+            .then(results =>  resolve(results[0]));
+        })
+        .catch(e => reject( e ));
+    });
+  };
+
   return{
 
     getCategories: (req, res) => {
@@ -15,10 +35,11 @@ module.exports = (knex) => {
       const { description } = parsedQs;
 
       if(description){
-        knex
-          .select("*")
-          .from("categories")
-          .where('description', 'ilike', `%${description}%`)
+        helpers.getCategoryByDescription(description)
+        // knex
+        //   .select("*")
+        //   .from("categories")
+        //   .where('description', 'ilike', `%${description}%`)
           .then(results => res.json(results))
           .catch(e => res.status(400).json({ error: 'Categories not found'}));
 
@@ -33,19 +54,9 @@ module.exports = (knex) => {
     },
 
     createCategory: (req, res) => {
-      knex('categories').max('id')
-        .then(result => result[0].max + 1)
-        .then( max => {
-          const newCategory = {
-              id: max,
-              description: req.body.description
-            };
-
-          knex("categories")
-            .insert(newCategory)
-            .then(results =>  res.json(newCategory));
-        })
-        .catch(e => res.status(400).json( {e} ));
+      createNewCategory(req.body.description)
+        .then(results =>  res.json(results))
+        .catch(e => res.status(400).json( e ));
     },
 
     getCategory: (req, res) => {

@@ -47,7 +47,7 @@ function createResourceElement (input, addClasses) {
   //Resource Social Wrap
   let resInnerSoc = $('<div>').addClass('resource_minimal_social_wrap row');
   let resInnerSocLikes = $('<div>').addClass('col-3');
-  let resInnerSocLikesTitle = $('<p>');
+  let resInnerSocLikesTitle = $('<p>').addClass('likes');
   let resInnerSocRate = $('<div>').addClass('col-3');
   let resInnerSocRateTitle = $('<p>');
   let resInnerSocCom = $('<div>').addClass('col-3');
@@ -479,7 +479,7 @@ $(document).ready(function() {
     })
     .done( response => {
       console.log(response);
-      // $(this).siblings("span").text(response);
+      $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
     });
 
   });

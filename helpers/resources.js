@@ -37,6 +37,7 @@ module.exports = (knex) => {
   const helpers = require('../helpers/index')(knex);
 
   const getResourceByID = (id) => {
+    console.log("promiseid", id);
     return new Promise(function(resolve, reject){
       knex
         .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
@@ -56,8 +57,14 @@ module.exports = (knex) => {
         .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
         .groupBy('res.id', 'users.username', 'cat.id')
         .where('res.id', id)
-        .then(results => resolve(results))
-        .catch(e => reject(e));
+        .then(results => {
+          console.log("Promise results",results);
+          resolve(results)
+        })
+        .catch(e => {
+          console.log("Promise error",e)
+          reject(e)
+        });
     });
   }
 
@@ -198,7 +205,7 @@ module.exports = (knex) => {
       console.log("Update resource triggered.");
       helpers.getUserIdByToken(token)
         .then(userId => {
-          const { updateResource , updateRefrences } = setUpdateQueries(req.body.url);
+          const { updateResource , updateRefrences } = setUpdateQueries(req.body);
 
         console.log("before first knex", updateRefrences);
 
@@ -233,14 +240,26 @@ module.exports = (knex) => {
                 knex
                   .select('*')
                   .from('resources_references AS res')
-                  .where('res.id', req.params.id)
+                  .where('res.resource_id', req.params.id)
                   .then(results => {
                     console.log("insid update references not empty", results);
-
+                    console.log("USER ID", userId);
+                    
                     const length = results.length;
-                    const referenceFound = results.filter(result => result.user_id === userId);
+                    // const referenceFound = results.filter(result => result.user_id == userId);
+                    let referenceFound = [];
+
+                    for (let r of results) {
+                      if (r.user_id == userId) {
+                         referenceFound.push(r);
+                        break;
+                      }
+                    }
+
+                    console.log("referenceFound", referenceFound)
                     let maxId = Math.max.apply(Math, results.map(result => result.id ));
 
+                    console.log("console log the length", length, referenceFound)
                     // create new refrence
                     if(length === 0 || referenceFound.length === 0){
                       console.log("Creating Reference.")
@@ -269,34 +288,47 @@ module.exports = (knex) => {
                         .insert(createReference)
                         .then(results => {
                           getResourceByID(req.params.id)
-                            .then( (results) => res.status(200).json(results) )
-                            .catch(e => res.status(400).json( e ));
+                          .then( (results) => res.status(200).json(results) )
+                          .catch(e => res.status(400).json( e ));
                         })
-                        .catch(e => res.status(400).json( {e} ));
+                      })
+                      .catch(e => res.status(400).json( {e} ));
 
                     // update
-                    }else if(referenceFound){
+                    }                
+                    else if(referenceFound){
                       console.log("Updating Reference.")
-                      const updtReference = {
-                          id: maxId++,
-                          resource_id: req.params.id,
-                          user_id: userId,
+                      const updtReference = {                          
                           rate_id: updateRefrences.rate_id,
-                          liked: false
+                          liked: referenceFound[0].liked
                         }
-                      if(updateRefrences.liked){ createReference.liked = true; }
+                      if(updateRefrences.liked){ 
+                        if (referenceFound[0].liked === false) {
+                          updtReference.liked = true; 
+                        } else {
+                          updtReference.liked = false; 
+                        }
+                      }
 
                       knex("resources_references")
                         .where('resource_id', req.params.id)
                         .andWhere('user_id', userId)
+                        .returning(['id'])
                         .update(updtReference)
                         .then(result => {
-                          if(result === 1){
+                          console.log(result);
+                          if(result.length === 1){
                             getResourceByID(req.params.id)
-                              .then( results => res.status(200).json(results) )
-                              .catch(e => res.status(400).json( e ));
+                              .then( results => {
+                                console.log("after promise results", results);
+                                return res.status(200).json(results) 
+                              })
+                              .catch(e => {
+                                console.log("after promise err",e)
+                                return res.status(400).json( e )});
+                          } else {
+                            res.status(400).json( {error: "Couldn't update resource references"} )                          
                           }
-                          res.status(400).send( {error: "Couldn't create resource references"} )
                         })
                     }
                   })

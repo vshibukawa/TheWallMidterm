@@ -6,6 +6,19 @@ const router  = express.Router();
 module.exports = (knex) => {
   const helpers = require('../helpers/index')(knex);
 
+  const getCommentById = (id) => {
+    return new Promise(function(resolve, reject){
+
+      knex
+        .select('com.id', 'com.user_id', 'users.username', 'com.created_on', 'com.text', 'com.resource_id')
+        .from("comments as com")
+        .innerJoin('users', 'users.id', 'com.user_id')
+        .where('com.id', id)
+        .then(results => resolve( results ))
+        .catch(e => reject( e ));
+    });
+  }
+
   return{
 
     deleteComment: (req, res) => {
@@ -38,11 +51,13 @@ module.exports = (knex) => {
               };
               console.log('newComments :', newComment)
               knex('comments')
-                .returning(['id', 'user_id', 'created_on', 'text', 'resource_id'])
+                // .returning(['id', 'user_id', 'created_on', 'text', 'resource_id'])
                 .insert(newComment)
                 .then(results => {
-                  console.log('completed comment', results);
-                  res.json(newComment)});
+                  getCommentById(newComment.id)
+                    .then( results => res.json(results[0]))
+                    .catch(e => res.status(400).json( e ));
+                });
             })
             .catch(e => res.status(400).json( e ));
         })

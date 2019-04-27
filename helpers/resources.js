@@ -32,34 +32,34 @@ const setUpdateQueries = (body) => {
   return { updateResource, updateRefrences };
 };
 
-const getResourceByID = (id) => {
-  return new Promise(function(resolve, reject){
-    console.log('here............. ', id);
-    knex
-      .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
-        'res.created_by as created_by_id', 'users.username',
-        knex.raw(`sum(rate)/count(ref.user_id) as rate`),
-        knex.raw(`sum(case
-            when liked = true then 1
-            else 0
-            end) as likes`),
-        knex.raw('count(com.id)  as comments'),
-        'cat.id as category_id', 'cat.description as category_description')
-      .from("resources as res")
-      .innerJoin('users', 'users.id', 'res.created_by')
-      .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
-      .innerJoin('rates', 'rates.id', 'ref.rate_id ')
-      .innerJoin('comments as com', 'com.resource_id', 'res.id ')
-      .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
-      .groupBy('res.id', 'users.username', 'cat.id')
-      .where('res.id', id)
-      .then(results => {console.log('results inner ', results); resolve(results)})
-      .catch(e => {console.log('error............. ', error); reject(e)});
-  });
-}
 
 module.exports = (knex) => {
   const helpers = require('../helpers/index')(knex);
+
+  const getResourceByID = (id) => {
+    return new Promise(function(resolve, reject){
+      knex
+        .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
+          'res.created_by as created_by_id', 'users.username',
+          knex.raw(`sum(rate)/count(ref.user_id) as rate`),
+          knex.raw(`sum(case
+              when liked = true then 1
+              else 0
+              end) as likes`),
+          knex.raw('count(com.id)  as comments'),
+          'cat.id as category_id', 'cat.description as category_description')
+        .from("resources as res")
+        .innerJoin('users', 'users.id', 'res.created_by')
+        .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
+        .innerJoin('rates', 'rates.id', 'ref.rate_id ')
+        .innerJoin('comments as com', 'com.resource_id', 'res.id ')
+        .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+        .groupBy('res.id', 'users.username', 'cat.id')
+        .where('res.id', id)
+        .then(results => resolve(results))
+        .catch(e => reject(e));
+    });
+  }
 
   return{
     getResource: (req, res) => {

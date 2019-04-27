@@ -81,9 +81,9 @@ function createResourceElement (input, addClasses) {
   $(resInnerHeadTitle).text(input['title']);
   $(resInnerHead).append(resInnerHeadLink);
   $(resInnerHeadLink).attr('href', '#');
-  $(resInnerHeadLink).text(input['url'])
+  $(resInnerHeadLink).text(input['url'].substr(0, 50) + '...');
   $(resInnerHead).append(resInnerHeadDesc);
-  $(resInnerHeadDesc).text(input['description']);
+  $(resInnerHeadDesc).text(input['description'].substr(0, 100) + '...');
   $(resInnerHead).append(resInnerHeadCatTitle);
   $(resInnerHeadCatTitle).text('Categories');
   $(resInnerHead).append(resInnerHeadCat);
@@ -443,7 +443,7 @@ $(document).ready(function() {
         $("#profile_button").parent().addClass('showElement');
         $("#add_button").parent().addClass('showElement');
         $('#fa-mitten').parent().addClass('showElement');
-        
+
         $("#register_button").parent().removeClass('showElement');
         $("#login_button").parent().removeClass('showElement');
         $("#logout_button").parent().removeClass('hideElement');
@@ -492,8 +492,8 @@ $(document).ready(function() {
       $('#fa-mitten').parent().removeClass('showElement');
       $('.main_section_wrap').empty();
 
-      
-      
+
+
       $('.avatar_wrap .avatar').toggle('.no-display');
       pagePopulate();
     })
@@ -541,15 +541,15 @@ $(document).ready(function() {
       console.log(response);
       $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
     });
-    
+
   });
-  
+
   $(".main_section_wrap").on("change", "select", function (e) {
 
     console.log("Selecting!", this.value);
 
     const resource_id = $('.fullLink',$(this).parent().parent().parent().parent()).data("resource_id");
-    
+
     $.ajax({
       type: 'PUT',
       url: `api/resources/${resource_id}`,
@@ -560,15 +560,15 @@ $(document).ready(function() {
       $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
     });
 
-    
+
 
 
     // $('select').on('change', function() {
     //   alert( this.value );
     // });
   });
-  
-  
+
+
 
 
   // initial page populate at first load

@@ -21,7 +21,6 @@ const usersRoutes             = require("./routes/users");
 const resourcesRoutes         = require("./routes/resources");
 const categoriesRoutes        = require("./routes/categories");
 const ratesRoutes             = require("./routes/rates");
-
 // Load the logger first so all (static) HTTP requests are logged to STDOUT
 // 'dev' = Concise output colored by response status for development use.
 //         The :status token will be colored red for server error codes, yellow for client error codes, cyan for redirection codes, and uncolored for all other codes.

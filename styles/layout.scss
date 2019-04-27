@@ -197,6 +197,11 @@
         }
       }
     }
+    .main_section_wrap {
+      .single_wrap {
+        margin-top:10px;
+      }
+    }
   }
 
   // Popup Form Styles
@@ -276,7 +281,7 @@
     -webkit-box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
     -moz-box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
     box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
-    width:100%;
+    min-height:325px;
 
     .resource_min_top_wrap {
       overflow-wrap: break-word;
@@ -404,4 +409,3 @@
 
 
   }
-  

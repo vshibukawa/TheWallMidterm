@@ -140,13 +140,14 @@ module.exports = (knex) => {
     },
 
     createResource: function  (req, res, token, knex){
+      console.log("create ressource helper function start.")
       helpers.getUserIdByToken(token)
         .then(userId => {
+          console.log("After get user ID by token", userId);
 
           knex('resources').max('id')
             .then(result => result[0].max + 1)
             .then( max => {
-
               const { url, title, description, category_id } = req.body;
               const newResource = {
                 id: max,
@@ -157,15 +158,22 @@ module.exports = (knex) => {
                 created_by: userId,
                 category_id
               };
-
               if(req.body.hasOwnProperty('category_id')){
                 newResource.category_id = req.body.category_id;
               }
 
-              knex('resources').insert({newResource})
-                .then(results =>  results.length === 1 ? res.json(newResource) : res.status(400).json( {error: "Couldn't create resource"} ));
+              knex('resources')
+                .returning( ['id', 'url', 'title', 'description', 'created_on' ,'created_by', 'category_id'])
+                .insert(newResource)
+                .then(results =>  {
+                  // console.log(results);
+                  results.length === 1 ? res.status(200).send(newResource) : res.status(400).json( {error: "Couldn't create resource"} )
+                });
             })
-            .catch(e => res.status(400).json( e ));
+            .catch(e => {
+              console.log("Catch",e)
+              res.status(400).json( e )
+            });
         }) ;
     },
 

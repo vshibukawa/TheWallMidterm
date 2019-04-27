@@ -95,6 +95,42 @@ function createResourceElement (input, addClasses) {
   return resWrap;
 }
 
+function createCommentElement(input) {
+  console.log("create comment element input:",input);
+  let toDate = new Date(input['created_on']).toDateString();
+  let comSingle = $('<div>').addClass('comment_single');
+  let comInfoRow = $('<div>').addClass('row userName');
+  let comInfoUser = $('<div>').addClass('col-8');
+  let comInfoUserName = $('<h4>');
+  let comInfoUserDate = $('<div>').addClass('comment_single_date col-4')
+  let comInfoUserDateVal = $('<p>');
+  let comInfoUserDateValSpan = $('<span>').addClass('comm_date');
+  let comTextWrap = $('<div>').addClass('row');
+  let comTextInner = $('<div>').addClass('col-12');
+  let comTextValue = $('<p>');
+
+  $(comSingle).append(comInfoRow);
+  $(comInfoRow).append(comInfoUser);
+  $(comInfoUser).append(comInfoUserName);
+  $(comInfoUserName).text(input['username']);
+  $(comInfoRow).append(comInfoUserDate);
+  $(comInfoUserDate).append(comInfoUserDateVal);
+  $(comInfoUserDateVal).append(comInfoUserDateValSpan);
+  $(comInfoUserDateValSpan).text(toDate);
+  $(comInfoUserDateVal).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
+
+  $(comSingle).append(comTextWrap);
+  $(comTextWrap).append(comTextInner);
+  $(comTextInner).append(comTextValue);
+  $(comTextValue).text(input['text']);
+
+
+
+  return comSingle;
+
+
+}
+
 
 function callIndividualData(resourceID, element ) {
   const ident = $('#popup_fullDetailed').data('resource_id');
@@ -105,8 +141,23 @@ function callIndividualData(resourceID, element ) {
   .then(resource => {
     $('.popupBoxContent').append(createResourceElement(resource[0], 'individualRes'));
   })
+  .then(() => {
+    $.ajax({
+      type: "GET",
+      url: `/api/resources/${ident}/comments`
+    })
+    .then(comments => {
+      renderComments(comments);
+    })
+  })
 
 };
+
+function renderComments(comments) {
+  for (let c of comments) {
+    $('.comments_wrap').prepend(createCommentElement(c));
+  }
+}
 
 function renderResources (inputData) {
   for (let index of inputData) {
@@ -182,6 +233,7 @@ $(document).ready(function() {
     $('#popup_fullDetailed').css('display', 'block');
     $('#popup_fullDetailed').data('resource_id', thisStuff)
     callIndividualData(thisStuff, $(this));
+
   });
 
   $(".comment_add_button").click(function () {
@@ -278,16 +330,15 @@ $(document).ready(function() {
   });
   $(".addRes-form").on("submit", function(event) {
     event.preventDefault();
-    console.log("Submit add resource")
     $(".alert").slideUp("fast");
     $(".alert").text("");
     const userInput =  $(this).serialize();
       $.ajax({
         type: "POST",
-        url: '/api/resources/:id',
+        url: '/api/resources/',
         data: userInput
       })
-      .done ( () => {
+      .done ( (result) => {
         $(".addRes_close_button").trigger("click");
       })
       .fail ( (response) => {
@@ -297,6 +348,33 @@ $(document).ready(function() {
         console.log(response);
       })
   });
+
+
+  $(".addComment-form").on("submit", function(event) {
+    event.preventDefault();
+    $(".alert").slideUp("fast");
+    $(".alert").text("");
+    const resID = $('#popup_fullDetailed').data('resource_id');
+    const userInput =  $(this).serialize();
+      $.ajax({
+        type: "POST",
+        url: `/api/resources/${resID}/comments/`,
+        data: userInput
+      })
+      .done ( (result) => {
+        $(".comment_add_button button").trigger("click");
+        $('.comments_wrap').prepend(createCommentElement(result));
+        console.log(result);
+      })
+      .fail ( (response) => {
+        $(".alert").slideDown("fast", () => {
+          $(".alert").text(getResponseError(response));
+        });
+        console.log(response);
+      })
+  });
+
+
   $(".login-form").on("submit", function(event) {
     event.preventDefault();
     $(".alert").slideUp("fast");
@@ -309,7 +387,7 @@ $(document).ready(function() {
       })
       .done ( (userInfo) => {
         frontuserInfo = userInfo.currentUser;
-        loginSuccess( frontuserInfo, ".login-form", ".login_close_button" )
+        loginSuccess( frontuserInfo, ".login-form", ".login_close_but-un" )
         $("#register_button").parent().addClass('hideElement');
         $("#login_button").parent().addClass('hideElement');
         $("#logout_button").parent().addClass('showElement');
@@ -332,7 +410,7 @@ $(document).ready(function() {
         .fail( (err) => {
           console.log('Failed', err)
         })
-
+        $(".login_close_button").trigger("click");
       })
       .fail ( response => loginFail( response ))
   });

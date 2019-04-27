@@ -70,7 +70,7 @@ function createResourceElement (input, addClasses) {
   $(resInnerHead).append(resInnerHeadDesc);
   $(resInnerHeadDesc).text(input['description']);
   $(resInnerHead).append(resInnerHeadCatTitle);
-  $(resInnerHeadCatTitle).text('Category');
+  $(resInnerHeadCatTitle).text('Categories');
   $(resInnerHead).append(resInnerHeadCat);
   $(resInnerHeadCat).text(input['category_description']);
 
@@ -277,8 +277,8 @@ $(document).ready(function() {
   const loginSuccess = function(user, form, closeButton){
     $(form).trigger("reset");
     $(closeButton).trigger("click");
-    $('.sidebar-nav .avatar').attr('src', user.avatar);
-    $('.sidebar-nav .avatar').toggle('.no-display');
+    $('.avatar_wrap .avatar').attr('src', user.avatar);
+    $('.avatar_wrap .avatar').toggle('.no-display');
     getUsersCategies(user.token);
     $('#sidebar-wrapper').data('token', user.token);
   }
@@ -387,6 +387,7 @@ $(document).ready(function() {
       .done ( (userInfo) => {
         frontuserInfo = userInfo.currentUser;
         loginSuccess( frontuserInfo, ".login-form", ".login_close_but-un" )
+        console.log('User INFO', userInfo)
         $("#register_button").parent().addClass('hideElement');
         $("#login_button").parent().addClass('hideElement');
         $("#logout_button").parent().addClass('showElement');
@@ -401,7 +402,7 @@ $(document).ready(function() {
 
         $.ajax({
           type: 'GET',
-          url: `api/users/${frontuserInfo}/resources/?limit=${globalVariables.limit}`,
+          url: `api/users/resources`,
         })
         .done( (data) => {
           renderResources(data);

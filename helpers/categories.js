@@ -1,30 +1,12 @@
 "use strict";
 
-const express = require('express');
-const router  = express.Router();
+const express     = require('express');
+const url         = require('url');
+const querystring = require('querystring');
+const router      = express.Router();
 
 module.exports = (knex) => {
   const helpers = require('../helpers/index')(knex);
-
-  const createNewCategory = (description) => {
-    return new Promise(function(resolve, reject){
-
-      knex('categories').max('id')
-        .then(result => result[0].max + 1)
-        .then( max => {
-          const newCategory = {
-              id: max,
-              description: description
-            };
-
-          knex("categories")
-            .insert(newCategory)
-            .returning('*')
-            .then(results =>  resolve(results[0]));
-        })
-        .catch(e => reject( e ));
-    });
-  };
 
   return{
 
@@ -54,7 +36,7 @@ module.exports = (knex) => {
     },
 
     createCategory: (req, res) => {
-      createNewCategory(req.body.description)
+      helpers.createNewCategory(req.body.description)
         .then(results =>  res.json(results))
         .catch(e => res.status(400).json( e ));
     },

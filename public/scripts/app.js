@@ -1,4 +1,18 @@
 // Global Variables
+
+function pagePopulate () {
+    $.ajax({
+      type: 'GET',
+      url: `api/resources/?limit=${globalVariables.limit}`
+    })
+    .done( (data) => {
+      console.log(data);
+      renderResources(data);
+    })
+    .fail( (err) => {
+      console.log('Failed', err)
+    })
+  }
 let frontuserInfo = {};
 
 const globalVariables = {
@@ -83,7 +97,9 @@ function createResourceElement (input, addClasses) {
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
   $(resInnerSocRate).append(resInnerSocRateTitle);
-  $(resInnerSocRateTitle).text('Rating: ' + input['rate']);
+  let rate = input['rate'];
+  if(!input['rate']){ rate = 0; }
+  $(resInnerSocRateTitle).text('Rating: ' + rate);
   $(resInnerSoc).append(resInnerSocCom);
   $(resInnerSocCom).append(resInnerSocComTitle);
   $(resInnerSocComTitle).text('Comments: ' + input['comments']);
@@ -339,7 +355,9 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
+        $(".addRes-form").trigger("reset");
         $(".addRes_close_button").trigger("click");
+        pagePopulate();
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
@@ -466,6 +484,7 @@ $(document).ready(function() {
     .fail ( response => loginFail( response ));
   });
 
+
   $(".main_section_wrap").on("click", "button.like-mitten", function (e) {
 
     const resource_id = $('.fullLink',$(this).parent().parent().parent()).data("resource_id");
@@ -487,19 +506,9 @@ $(document).ready(function() {
 
   });
 
-  $(function pagePopulate () {
-    $.ajax({
-      type: 'GET',
-      url: `api/resources/?limit=${globalVariables.limit}`
-    })
-    .done( (data) => {
-      console.log(data);
-      renderResources(data);
-    })
-    .fail( (err) => {
-      console.log('Failed', err)
-    })
-  })
+
+  pagePopulate();
+
 
 
   // THIS FUNCTION IS FOR THE MENU TOGGLE SPECIFICALLY  //

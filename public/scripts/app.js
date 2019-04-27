@@ -97,7 +97,9 @@ function createResourceElement (input, addClasses) {
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
   $(resInnerSocRate).append(resInnerSocRateTitle);
-  $(resInnerSocRateTitle).text('Rating: ' + input['rate']);
+  let rate = input['rate'];
+  if(!input['rate']){ rate = 0; }
+  $(resInnerSocRateTitle).text('Rating: ' + rate);
   $(resInnerSoc).append(resInnerSocCom);
   $(resInnerSocCom).append(resInnerSocComTitle);
   $(resInnerSocComTitle).text('Comments: ' + input['comments']);

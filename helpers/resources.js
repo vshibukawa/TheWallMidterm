@@ -34,6 +34,7 @@ const setUpdateQueries = (body) => {
 
 const getResourceByID = (id) => {
   return new Promise(function(resolve, reject){
+    console.log('here............. ', id);
     knex
       .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
         'res.created_by as created_by_id', 'users.username',
@@ -52,8 +53,8 @@ const getResourceByID = (id) => {
       .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
       .groupBy('res.id', 'users.username', 'cat.id')
       .where('res.id', id)
-      .then(results => resolve(results))
-      .catch(e => reject(e));
+      .then(results => {console.log('results inner ', results); resolve(results)})
+      .catch(e => {console.log('error............. ', error); reject(e)});
   });
 }
 
@@ -63,7 +64,7 @@ module.exports = (knex) => {
   return{
     getResource: (req, res) => {
       getResourceByID(req.params.id)
-        .then( () => resultsres.json(results) )
+        .then( results => {console.log('results ', results); res.json(results)} )
         .catch(e => res.status(400).json( e ));
     },
 
@@ -169,7 +170,7 @@ module.exports = (knex) => {
             .catch(e => res.status(400).json( {e} ));
         } // end of if limit
       } // end of if search
-    } // end of getReourcesByQuery
+    }, // end of getReourcesByQuery
 
     deleteResource: function(req, res, token, knex){
       helpers.getUserIdByToken(token)
@@ -246,9 +247,9 @@ module.exports = (knex) => {
 
                       knex('resources_references')
                         .insert(createReference)
-                        .then(() => {
+                        .then(results => {
                           getResourceByID(req.params.id)
-                            .then( () => res.status(200).json(results) )
+                            .then( (results) => res.status(200).json(results) )
                             .catch(e => res.status(400).json( e ));
                         })
                         .catch(e => res.status(400).json( {e} ));
@@ -271,7 +272,7 @@ module.exports = (knex) => {
                         .then(result => {
                           if(result === 1){
                             getResourceByID(req.params.id)
-                              .then( () => res.status(200).json(results) )
+                              .then( results => res.status(200).json(results) )
                               .catch(e => res.status(400).json( e ));
                           }
                           res.status(400).json( {error: "Couldn't create resource references"} )

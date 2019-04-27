@@ -1,6 +1,9 @@
 // Global Variables
 let frontuserInfo = {};
 
+const globalVariables = {
+  limit: 20
+};
 
 function createResourceElement (input) {
   // Create variables representing the individual elements in a resource.
@@ -320,7 +323,7 @@ $(document).ready(function() {
 
         $.ajax({
           type: 'GET',
-          url: `api/users/${frontuserInfo}/resources/?limit=20`,
+          url: `api/users/${frontuserInfo}/resources/?limit=${globalVariables.limit}`,
         })
         .done( (data) => {
           renderResources(data);
@@ -368,12 +371,22 @@ $(document).ready(function() {
     $.ajax(`api/categories/${category_id}/resources/`)
     .done( (data) => renderResources(data) )
     .fail ( response => loginFail( response ));
-  })
+  });
+
+  $('.search-form').on('submit', function(event){
+    event.preventDefault();
+    const userInput =  $(this).serialize();
+
+    $('.main_section_wrap').empty();
+    $.ajax(`api/resources/?${userInput}&limit=${globalVariables.limit}`)
+    .done( (data) => renderResources(data) )
+    .fail ( response => loginFail( response ));
+  });
 
   $(function pagePopulate () {
     $.ajax({
       type: 'GET',
-      url: 'api/resources/?limit=20'
+      url: `api/resources/?limit=${globalVariables.limit}`
     })
     .done( (data) => {
       console.log(data);

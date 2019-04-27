@@ -272,6 +272,7 @@ $(document).ready(function() {
   }
 
   const getUsersCategies = (token)=>{
+    $('.sidebar-nav  .categories').empty();
     $.ajax('/api/users/categories')
     .done(categories => {
       const categoriesArray = [];
@@ -286,7 +287,7 @@ $(document).ready(function() {
         $li.append($a);
         categoriesArray.push($li);
       })
-      $('.sidebar-nav  .navbar-nav.categories').append(categoriesArray);
+      $('.sidebar-nav  .categories').append(categoriesArray);
     })
     .fail(response => loginFail( response ));
   }

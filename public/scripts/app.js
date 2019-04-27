@@ -1,6 +1,8 @@
 // Global Variables
 
 function pagePopulate () {
+  getUsersCategies();
+
     $.ajax({
       type: 'GET',
       url: `api/resources/?limit=${globalVariables.limit}`
@@ -283,6 +285,10 @@ $(document).ready(function() {
 
   $(".comment_add_button").click(function () {
     $(".comm_add_new").slideToggle("fast");
+
+    if($(".comm_add_new").css('display') === 'block'){
+      $(".comm_add_new textarea").focus();
+    }
   })
 
   $(".full_close_button").click(function () {
@@ -300,24 +306,32 @@ $(document).ready(function() {
     return XHR.responseText;
   }
 
-  const getUsersCategies = (token)=>{
-    $.ajax('/api/users/categories')
-    .done(categories => {
-      const categoriesArray = [];
-      categories.forEach(category => {
+  const getUsersCategies = ()=>{
+    const token = $('#sidebar-wrapper').data('token');
 
-        const $a = $('<a>');
-        $a.text(category.description);
-        $a.data('category_id', category.id);
-        $a.addClass('nav-link');
-        const $li = $('<li>');
-        $li.addClass('nav-item');
-        $li.append($a);
-        categoriesArray.push($li);
+    $('.navbar-nav.categories').empty();
+
+    if(token){
+
+      $.ajax('/api/users/categories')
+      .done(categories => {
+        $('.navbar-nav.categories').empty();
+        const categoriesArray = [];
+        categories.forEach(category => {
+
+          const $a = $('<a>');
+          $a.text(category.description);
+          $a.data('category_id', category.id);
+          $a.addClass('nav-link');
+          const $li = $('<li>');
+          $li.addClass('nav-item');
+          $li.append($a);
+          categoriesArray.push($li);
+        })
+        $('.navbar-nav.categories').append(categoriesArray);
       })
-      $('.sidebar-nav  .navbar-nav.categories').append(categoriesArray);
-    })
-    .fail(response => loginFail( response ));
+      .fail(response => loginFail( response ));
+    }
   }
 
   const loginSuccess = function(user, form, closeButton){
@@ -325,8 +339,8 @@ $(document).ready(function() {
     $(closeButton).trigger("click");
     $('.avatar_wrap .avatar').attr('src', user.avatar);
     $('.avatar_wrap .avatar').toggle('.no-display');
-    getUsersCategies(user.token);
     $('#sidebar-wrapper').data('token', user.token);
+    getUsersCategies();
   }
 
   const loginFail = function(response){
@@ -335,7 +349,7 @@ $(document).ready(function() {
   const clearUsers = function(){
     $('.sidebar-nav .avatar').attr('src', '');
     $('.sidebar-nav .avatar').toggle('.no-display');
-    $('.sidebar-nav .navbar-nav.categories').empty();
+    $('.navbar-nav.categories').empty();
     $('#sidebar-wrapper').data('token', '');
   }
 
@@ -410,6 +424,7 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
+        $(".addComment-form").trigger("reset");
         $(".comment_add_button button").trigger("click");
         $('.comments_wrap').prepend(createCommentElement(result));
         console.log(result);
@@ -502,7 +517,7 @@ $(document).ready(function() {
     })
   });
 
-  $('.sidebar-nav  .navbar-nav.categories').on('click', 'a', function(event){
+  $('.navbar-nav.categories').on('click', 'a', function(event){
     event.preventDefault();
     const category_id = $(this).data('category_id');
     const user_token = $('#sidebar-wrapper').data('token');
@@ -520,6 +535,7 @@ $(document).ready(function() {
     $.ajax(`api/resources/?${userInput}&limit=${globalVariables.limit}`)
     .done( (data) => renderResources(data) )
     .fail ( response => loginFail( response ));
+    $('.search-form').trigger("reset");
   });
 
 

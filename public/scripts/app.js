@@ -1,4 +1,18 @@
 // Global Variables
+
+function pagePopulate () {
+    $.ajax({
+      type: 'GET',
+      url: `api/resources/?limit=${globalVariables.limit}`
+    })
+    .done( (data) => {
+      console.log(data);
+      renderResources(data);
+    })
+    .fail( (err) => {
+      console.log('Failed', err)
+    })
+  }
 let frontuserInfo = {};
 
 const globalVariables = {
@@ -338,7 +352,9 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
+        $(".addRes-form").trigger("reset");
         $(".addRes_close_button").trigger("click");
+        pagePopulate();
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
@@ -462,19 +478,8 @@ $(document).ready(function() {
     .fail ( response => loginFail( response ));
   });
 
-  $(function pagePopulate () {
-    $.ajax({
-      type: 'GET',
-      url: `api/resources/?limit=${globalVariables.limit}`
-    })
-    .done( (data) => {
-      console.log(data);
-      renderResources(data);
-    })
-    .fail( (err) => {
-      console.log('Failed', err)
-    })
-  })
+  pagePopulate();
+
 
 
   // THIS FUNCTION IS FOR THE MENU TOGGLE SPECIFICALLY  //

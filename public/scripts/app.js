@@ -50,6 +50,7 @@ function createResourceElement (input, addClasses) {
   let resInnerSocLikesTitle = $('<p>').addClass('likes');
   let resInnerSocRate = $('<div>').addClass('col-3');
   let resInnerSocRateTitle = $('<p>');
+  let resInnerSocRateRater = $('<span>');
   let resInnerSocCom = $('<div>').addClass('col-3');
   let resInnerSocComTitle = $('<p>');
   let resInnerSocUser = $('<div>').addClass('col-3 user_Controls hideElement');
@@ -83,6 +84,16 @@ function createResourceElement (input, addClasses) {
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
   $(resInnerSocRate).append(resInnerSocRateTitle);
+  $(resInnerSocRate).append(resInnerSocRateRater);
+  $(resInnerSocRateRater).append(`
+                                  <select class="form-control selcl" name="rates">
+                                    <option value="2">1</option>
+                                    <option value="3">2</option>
+                                    <option value="4">3</option>
+                                    <option value="5">4</option>
+                                    <option value="6">5</option>
+                                  </select>
+                                `);
   $(resInnerSocRateTitle).text('Rating: ' + input['rate']);
   $(resInnerSoc).append(resInnerSocCom);
   $(resInnerSocCom).append(resInnerSocComTitle);
@@ -165,6 +176,20 @@ function renderResources (inputData) {
   }
 }
 
+function pagePopulate () {
+  $.ajax({
+    type: 'GET',
+    url: `api/resources/?limit=${globalVariables.limit}`
+  })
+  .done( (data) => {
+    console.log(data);
+    renderResources(data);
+  })
+  .fail( (err) => {
+    console.log('Failed', err)
+  })
+}
+
 $(document).ready(function() {
   // Set default states for first load
   $("#register_button").parent().addClass('showElement');
@@ -172,12 +197,15 @@ $(document).ready(function() {
   $("#logout_button").parent().addClass('hideElement');
   $("#profile_button").parent().addClass('hideElement');
   $("#add_button").parent().addClass('hideElement');
+  $('#fa-mitten').parent().addClass('hideElement');
+
 
   $("#register_button").parent().removeClass('hideElement');
   $("#login_button").parent().removeClass('hideElement');
   $("#logout_button").parent().removeClass('showElement');
   $("#profile_button").parent().removeClass('showElement');
   $("#add_button").parent().removeClass('showElement');
+  $('#fa-mitten').parent().removeClass('showElement');
 
   // Handle registration showing JS
   $("#login_button").click(function () {
@@ -394,12 +422,14 @@ $(document).ready(function() {
         $("#logout_button").parent().addClass('showElement');
         $("#profile_button").parent().addClass('showElement');
         $("#add_button").parent().addClass('showElement');
-
+        $('#fa-mitten').parent().addClass('showElement');
+        
         $("#register_button").parent().removeClass('showElement');
         $("#login_button").parent().removeClass('showElement');
         $("#logout_button").parent().removeClass('hideElement');
         $("#profile_button").parent().removeClass('hideElement');
         $("#add_button").parent().removeClass('hideElement');
+        $('#fa-mitten').parent().removeClass('hideElement');
         $('.main_section_wrap').empty();
 
         $.ajax({
@@ -432,12 +462,18 @@ $(document).ready(function() {
       $("#profile_button").parent().addClass('hideElement');
       $("#add_button").parent().addClass('hideElement');
       $("#logout_button").parent().addClass('hideElement');
+      $('#fa-mitten').parent().addClass('hideElement');
 
       $("#register_button").parent().removeClass('hideElement');
       $("#login_button").parent().removeClass('hideElement');
       $("#profile_button").parent().removeClass('showElement');
       $("#add_button").parent().removeClass('showElement');
       $("#logout_button").parent().removeClass('showElement');
+      $('#fa-mitten').parent().removeClass('showElement');
+      $('.main_section_wrap').empty();
+
+      pagePopulate();
+
     })
     .fail ( (response) => {
       console.log("Logout failed!", response);
@@ -482,22 +518,38 @@ $(document).ready(function() {
       console.log(response);
       $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
     });
-
+    
   });
+  
+  $(".main_section_wrap").on("change", "select", function (e) {
 
-  $(function pagePopulate () {
+    console.log("Selecting!", this.value);
+
+    const resource_id = $('.fullLink',$(this).parent().parent().parent().parent()).data("resource_id");
+    
     $.ajax({
-      type: 'GET',
-      url: `api/resources/?limit=${globalVariables.limit}`
+      type: 'PUT',
+      url: `api/resources/${resource_id}`,
+      data: {"rate_id": this.value}
     })
-    .done( (data) => {
-      console.log(data);
-      renderResources(data);
-    })
-    .fail( (err) => {
-      console.log('Failed', err)
-    })
-  })
+    .done( response => {
+      console.log(response);
+      $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
+    });
+
+    
+
+
+    // $('select').on('change', function() {
+    //   alert( this.value );
+    // });
+  });
+  
+  
+
+
+  // initial page populate at first load
+  pagePopulate();
 
 
   // THIS FUNCTION IS FOR THE MENU TOGGLE SPECIFICALLY  //

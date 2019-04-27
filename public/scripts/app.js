@@ -133,7 +133,7 @@ function createCommentElement(input) {
   $(comInfoUserDate).append(comInfoUserDateVal);
   $(comInfoUserDateVal).append(comInfoUserDateValSpan);
   $(comInfoUserDateValSpan).text(toDate);
-  $(comInfoUserDateVal).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
+  // $(comInfoUserDateVal).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
 
   $(comSingle).append(comTextWrap);
   $(comTextWrap).append(comTextInner);
@@ -456,6 +456,8 @@ $(document).ready(function() {
       $("#profile_button").parent().removeClass('showElement');
       $("#add_button").parent().removeClass('showElement');
       $("#logout_button").parent().removeClass('showElement');
+
+      $('.avatar_wrap .avatar').toggle('.no-display');
     })
     .fail ( (response) => {
       console.log("Logout failed!", response);

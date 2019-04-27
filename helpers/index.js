@@ -42,6 +42,36 @@ module.exports = (knex) => {
           .then(results => resolve(results))
           .catch(e => reject({ error: 'Categories not found'}));
       });
+    },
+
+    createNewCategory: (description) => {
+      return new Promise(function(resolve, reject){
+
+        knex('categories').max('id')
+          .then(result => result[0].max + 1)
+          .then( max => {
+            const newCategory = {
+                id: max,
+                description: description
+              };
+
+            knex("categories")
+              .insert(newCategory)
+              .returning('*')
+              .then(results => resolve(results[0]));
+          })
+          .catch(e => reject( e ));
+      });
+    },
+
+    checkMandatoryInputs: (input, inputNames) => {
+      for(let key of inputNames){
+        if( (!input.hasOwnProperty(key)) || (!input[key]) || input[key].replace(/\s/g, '') === ''){
+          return false;
+        }
+      }
+
+      return true;
     }
   }
 };

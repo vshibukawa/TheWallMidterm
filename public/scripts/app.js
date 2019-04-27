@@ -1,4 +1,18 @@
 // Global Variables
+
+function pagePopulate () {
+    $.ajax({
+      type: 'GET',
+      url: `api/resources/?limit=${globalVariables.limit}`
+    })
+    .done( (data) => {
+      console.log(data);
+      renderResources(data);
+    })
+    .fail( (err) => {
+      console.log('Failed', err)
+    })
+  }
 let frontuserInfo = {};
 
 const globalVariables = {
@@ -47,7 +61,7 @@ function createResourceElement (input, addClasses) {
   //Resource Social Wrap
   let resInnerSoc = $('<div>').addClass('resource_minimal_social_wrap row');
   let resInnerSocLikes = $('<div>').addClass('col-3');
-  let resInnerSocLikesTitle = $('<p>');
+  let resInnerSocLikesTitle = $('<p>').addClass('likes');
   let resInnerSocRate = $('<div>').addClass('col-3');
   let resInnerSocRateTitle = $('<p>');
   let resInnerSocCom = $('<div>').addClass('col-3');
@@ -70,7 +84,7 @@ function createResourceElement (input, addClasses) {
   $(resInnerHead).append(resInnerHeadDesc);
   $(resInnerHeadDesc).text(input['description']);
   $(resInnerHead).append(resInnerHeadCatTitle);
-  $(resInnerHeadCatTitle).text('Category');
+  $(resInnerHeadCatTitle).text('Categories');
   $(resInnerHead).append(resInnerHeadCat);
   $(resInnerHeadCat).text(input['category_description']);
 
@@ -78,11 +92,14 @@ function createResourceElement (input, addClasses) {
   //Resource Social
   $(resInner).append(resInnerSoc);
   $(resInnerSoc).append(resInnerSocLikes);
+  $(resInnerSocLikes).append('<button class="like-mitten"><i class="fas fa-mitten"></i></button>');
   $(resInnerSocLikes).append(resInnerSocLikesTitle);
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
   $(resInnerSocRate).append(resInnerSocRateTitle);
-  $(resInnerSocRateTitle).text('Rating: ' + input['rate']);
+  let rate = input['rate'];
+  if(!input['rate']){ rate = 0; }
+  $(resInnerSocRateTitle).text('Rating: ' + rate);
   $(resInnerSoc).append(resInnerSocCom);
   $(resInnerSocCom).append(resInnerSocComTitle);
   $(resInnerSocComTitle).text('Comments: ' + input['comments']);
@@ -277,8 +294,8 @@ $(document).ready(function() {
   const loginSuccess = function(user, form, closeButton){
     $(form).trigger("reset");
     $(closeButton).trigger("click");
-    $('.sidebar-nav .avatar').attr('src', user.avatar);
-    $('.sidebar-nav .avatar').toggle('.no-display');
+    $('.avatar_wrap .avatar').attr('src', user.avatar);
+    $('.avatar_wrap .avatar').toggle('.no-display');
     getUsersCategies(user.token);
     $('#sidebar-wrapper').data('token', user.token);
   }
@@ -338,7 +355,9 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
+        $(".addRes-form").trigger("reset");
         $(".addRes_close_button").trigger("click");
+        pagePopulate();
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
@@ -387,6 +406,7 @@ $(document).ready(function() {
       .done ( (userInfo) => {
         frontuserInfo = userInfo.currentUser;
         loginSuccess( frontuserInfo, ".login-form", ".login_close_but-un" )
+        console.log('User INFO', userInfo)
         $("#register_button").parent().addClass('hideElement');
         $("#login_button").parent().addClass('hideElement');
         $("#logout_button").parent().addClass('showElement');
@@ -462,19 +482,31 @@ $(document).ready(function() {
     .fail ( response => loginFail( response ));
   });
 
-  $(function pagePopulate () {
+
+  $(".main_section_wrap").on("click", "button.like-mitten", function (e) {
+
+    const resource_id = $('.fullLink',$(this).parent().parent().parent()).data("resource_id");
+
+    if ($(this).hasClass("clicked")) {
+      $(this).removeClass("clicked");
+    } else {
+      $(this).addClass("clicked");
+    }
     $.ajax({
-      type: 'GET',
-      url: `api/resources/?limit=${globalVariables.limit}`
+      type: 'PUT',
+      url: `api/resources/${resource_id}`,
+      data: {"liked": true}
     })
-    .done( (data) => {
-      console.log(data);
-      renderResources(data);
-    })
-    .fail( (err) => {
-      console.log('Failed', err)
-    })
-  })
+    .done( response => {
+      console.log(response);
+      $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
+    });
+
+  });
+
+
+  pagePopulate();
+
 
 
   // THIS FUNCTION IS FOR THE MENU TOGGLE SPECIFICALLY  //

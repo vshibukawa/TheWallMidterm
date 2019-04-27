@@ -36,7 +36,32 @@ const setUpdateQueries = (body) => {
 module.exports = (knex) => {
   const helpers = require('../helpers/index')(knex);
 
+  const createNewResource = ( body, id, userId, category_id ) => {
+    return new Promise(function(resolve, reject){
+      const { url, title, description } = body;
+      const newResource = {
+        id,
+        url,
+        title,
+        description,
+        created_on: new Date(),
+        created_by: userId,
+        category_id
+      };
+
+      console.log('create new resource ', newResource);
+      knex('resources')
+        .returning( ['id', 'url', 'title', 'description', 'created_on' ,'created_by', 'category_id'])
+        .insert(newResource)
+        .then(results =>  {
+          console.log('create new resource results ', results);
+          results.length === 1 ? resolve(newResource) : reject( {error: "Couldn't create resource"} )
+        });
+    })
+  }
+
   const getResourceByID = (id) => {
+    console.log("promiseid", id);
     return new Promise(function(resolve, reject){
       knex
         .select('res.id', 'res.url', 'res.title', 'res.description', 'res.created_on',
@@ -51,13 +76,19 @@ module.exports = (knex) => {
         .from("resources as res")
         .innerJoin('users', 'users.id', 'res.created_by')
         .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
-        .innerJoin('rates', 'rates.id', 'ref.rate_id ')
-        .innerJoin('comments as com', 'com.resource_id', 'res.id ')
-        .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+        .leftOuterJoin('rates', 'rates.id', 'ref.rate_id ')
+        .leftOuterJoin('comments as com', 'com.resource_id', 'res.id ')
+        .leftOuterJoin('categories as cat', 'cat.id', 'res.category_id ')
         .groupBy('res.id', 'users.username', 'cat.id')
         .where('res.id', id)
-        .then(results => resolve(results))
-        .catch(e => reject(e));
+        .then(results => {
+          console.log("Promise results",results);
+          resolve(results)
+        })
+        .catch(e => {
+          console.log("Promise error",e)
+          reject(e)
+        });
     });
   }
 
@@ -97,9 +128,9 @@ module.exports = (knex) => {
                 .from("resources as res")
                 .innerJoin('users', 'users.id', 'res.created_by')
                 .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
-                .innerJoin('rates', 'rates.id', 'ref.rate_id ')
-                .innerJoin('comments as com', 'com.resource_id', 'res.id ')
-                .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+                .leftOuterJoin('rates', 'rates.id', 'ref.rate_id ')
+                .leftOuterJoin('comments as com', 'com.resource_id', 'res.id ')
+                .leftOuterJoin('categories as cat', 'cat.id', 'res.category_id ')
                 .whereIn('res.id', ids)
                 .groupBy('res.id', 'users.username', 'cat.id')
                 .then(results => res.json(results))
@@ -131,9 +162,9 @@ module.exports = (knex) => {
           .from("resources as res")
           .innerJoin('users', 'users.id', 'res.created_by')
           .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
-          .innerJoin('rates', 'rates.id', 'ref.rate_id ')
-          .innerJoin('comments as com', 'com.resource_id', 'res.id ')
-          .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+          .leftOuterJoin('rates', 'rates.id', 'ref.rate_id ')
+          .leftOuterJoin('comments as com', 'com.resource_id', 'res.id ')
+          .leftOuterJoin('categories as cat', 'cat.id', 'res.category_id ')
           .where('cat.description', 'ilike', searchFor)
           .orWhere('res.url', 'ilike', searchFor)
           .orWhere('res.title', 'ilike', searchFor)
@@ -160,9 +191,9 @@ module.exports = (knex) => {
             .from("resources as res")
             .innerJoin('users', 'users.id', 'res.created_by')
             .leftOuterJoin('resources_references as ref', 'ref.resource_id', 'res.id')
-            .innerJoin('rates', 'rates.id', 'ref.rate_id ')
-            .innerJoin('comments as com', 'com.resource_id', 'res.id ')
-            .innerJoin('categories as cat', 'cat.id', 'res.category_id ')
+            .leftOuterJoin('rates', 'rates.id', 'ref.rate_id ')
+            .leftOuterJoin('comments as com', 'com.resource_id', 'res.id ')
+            .leftOuterJoin('categories as cat', 'cat.id', 'res.category_id ')
             .groupBy('res.id', 'users.username', 'cat.id')
             .orderBy('rate', 'desc')
             .limit(limit)
@@ -195,97 +226,151 @@ module.exports = (knex) => {
     },
 
     updateResource: function  (req, res, token, knex){
+      console.log("Update resource triggered.");
       helpers.getUserIdByToken(token)
         .then(userId => {
-          const { updateResource , updateRefrences } = setUpdateQueries(req.body.url);
+          const { updateResource , updateRefrences } = setUpdateQueries(req.body);
+
+        console.log("before first knex", updateRefrences);
 
           knex
             .select('*')
             .from("resources")
             .where('id', req.params.id)
-            .andWhere('user_id')
             .then(results => {
 
-              if(!updateResource.isEmpty()){
-                if(results.created_by !== userId){ return res.status(400).json( {error: "You cannot edit the resource because you haven't create it"} ) }
-                knex("resources")
-                .where('id', results[0].id)
-                .update(updateResource)
-                .then(result => {
-                  if(result === 1){
-                    updateResource.id = results[0].id;
-                    updateResource.created_on = results[0].created_on;
-                    updateResource.created_by = results[0].created_by;
-                    return res.status(200).json( updateResource );
-                  }
-                })
+              console.log("inside select * from resources", results, updateResource, updateRefrences);
+
+              if(!(Object.keys(updateResource).length === 0 && updateResource.constructor === Object)){
+                if(results.created_by !== userId){ return res.status(400).send( {error: "You cannot edit the resource because you haven't create it"} ) }
+                  knex("resources")
+                  .where('id', results[0].id)
+                  .update(updateResource)
+                  .then(result => {
+                    console.log("insid update resources not empty", result);
+                    if(result.length === 1){
+                      updateResource.id = results[0].id;
+                      updateResource.created_on = results[0].created_on;
+                      updateResource.created_by = results[0].created_by;
+                      return res.status(200).send( updateResource );
+                    }
+                  })
+
               }
 
-              if(!updateRefrences.isEmpty()){
-                if(results.created_by !== userId){ return res.status(400).json( {error: "You cannot like/rate the resource because you create it"} ) }
+              if(!(Object.keys(updateRefrences).length === 0 && updateRefrences.constructor === Object)){
+                if(results.created_by === userId){ return res.status(400).send( {error: "You cannot like/rate the resource because you create it"} ) }
 
                 knex
                   .select('*')
-                  .from('resources_references')
-                  .where('res.id', req.params.id)
+                  .from('resources_references AS res')
+                  .where('res.resource_id', req.params.id)
                   .then(results => {
+                    console.log("insid update references not empty", results);
+                    console.log("USER ID", userId);
 
                     const length = results.length;
-                    const referenceFound = results.filter(result => result.user_id === userId);
-                    const maxId = Math.max.apply(Math, results.map(result => result.id ));
+                    // const referenceFound = results.filter(result => result.user_id == userId);
+                    let referenceFound = [];
 
+                    for (let r of results) {
+                      if (r.user_id == userId) {
+                         referenceFound.push(r);
+                        break;
+                      }
+                    }
+
+                    console.log("referenceFound", referenceFound)
+                    let maxId = Math.max.apply(Math, results.map(result => result.id ));
+
+                    console.log("console log the length", length, referenceFound)
                     // create new refrence
                     if(length === 0 || referenceFound.length === 0){
+                      console.log("Creating Reference.")
                       const createReference = {
-                          id: maxId++,
+                          // id: maxId++,
                           resource_id: req.params.id,
                           user_id: userId,
-                          rate_id: updateRefrences.rate_id,
+                          rate_id: 1,
                           liked: false
                         }
-                      if(updateRefrences.liked){ createReference.liked = true; }
+                        if (updateRefrences.hasOwnProperty("rate_id")) {
+                          createReference.rate_id = updateRefrences.rate_id;
+                        }
 
-                      knex('resources_references')
+                        if(updateRefrences.liked){ createReference.liked = true; }
+
+                      console.log("update references", updateRefrences, "createReferences", createReference);
+
+                      knex('resources_references').max('id')
+                      .then(result => result[0].max + 1)
+                      .then( max => {
+                        console.log("max", max);
+                        createReference.id = max
+
+                        knex('resources_references')
                         .insert(createReference)
                         .then(results => {
                           getResourceByID(req.params.id)
-                            .then( (results) => res.status(200).json(results) )
-                            .catch(e => res.status(400).json( e ));
+                          .then( (results) => res.status(200).json(results) )
+                          .catch(e => res.status(400).json( e ));
                         })
-                        .catch(e => res.status(400).json( {e} ));
+                      })
+                      .catch(e => res.status(400).json( {e} ));
 
                     // update
-                    }else if(referenceFound){
+                    }
+                    else if(referenceFound){
+                      console.log("Updating Reference.")
                       const updtReference = {
-                          id: maxId++,
-                          resource_id: req.params.id,
-                          user_id: userId,
                           rate_id: updateRefrences.rate_id,
-                          liked: false
+                          liked: referenceFound[0].liked
                         }
-                      if(updateRefrences.liked){ createReference.liked = true; }
+                      if(updateRefrences.liked){
+                        if (referenceFound[0].liked === false) {
+                          updtReference.liked = true;
+                        } else {
+                          updtReference.liked = false;
+                        }
+                      }
 
                       knex("resources_references")
                         .where('resource_id', req.params.id)
                         .andWhere('user_id', userId)
+                        .returning(['id'])
                         .update(updtReference)
                         .then(result => {
-                          if(result === 1){
+                          console.log(result);
+                          if(result.length === 1){
                             getResourceByID(req.params.id)
-                              .then( results => res.status(200).json(results) )
-                              .catch(e => res.status(400).json( e ));
+                              .then( results => {
+                                console.log("after promise results", results);
+                                return res.status(200).json(results)
+                              })
+                              .catch(e => {
+                                console.log("after promise err",e)
+                                return res.status(400).json( e )});
+                          } else {
+                            res.status(400).json( {error: "Couldn't update resource references"} )
                           }
-                          res.status(400).json( {error: "Couldn't create resource references"} )
                         })
                     }
                   })
               }
             })
-            .catch(e => res.status(400).json( {e} ));
+            .catch(e => {
+              console.log(e);
+              res.status(400).send( {e} )
+            });
           }) ;
     },
 
     createResource: function  (req, res, token, knex){
+      const inputs = ['url', 'title', 'description', 'category_description'];
+      if(! helpers.checkMandatoryInputs(req.body, inputs)){
+        return res.status(400).json( { error: 'Empty input(s)' } );
+      }
+
       console.log("create ressource helper function start.")
       helpers.getUserIdByToken(token)
         .then(userId => {
@@ -294,27 +379,41 @@ module.exports = (knex) => {
           knex('resources').max('id')
             .then(result => result[0].max + 1)
             .then( max => {
-              const { url, title, description, category_id } = req.body;
-              const newResource = {
-                id: max,
-                url,
-                title,
-                description,
-                created_on: new Date(),
-                created_by: userId,
-                category_id
-              };
-              if(req.body.hasOwnProperty('category_id')){
-                newResource.category_id = req.body.category_id;
-              }
+              const { category_description } = req.body;
 
-              knex('resources')
-                .returning( ['id', 'url', 'title', 'description', 'created_on' ,'created_by', 'category_id'])
-                .insert(newResource)
-                .then(results =>  {
-                  // console.log(results);
-                  results.length === 1 ? res.status(200).send(newResource) : res.status(400).json( {error: "Couldn't create resource"} )
-                });
+              helpers.getCategoryByDescription(category_description)
+                .then( result => {
+                  // console.log('get category_id', result);
+
+                  if(result.length === 0){
+                    helpers.createNewCategory(category_description)
+                    .then( result => {
+                      // console.log('created category_id', result);
+
+                      createNewResource(req.body, max, userId, result.id)
+                        .then(result => {
+                          // console.log('created resource', result);
+                          getResourceByID(result.id)
+                            .then( results => res.status(200).json(results) )
+                            .catch(e => res.status(400).json( e ));
+                        })
+                        .catch(e => res.status(400).json( e ));
+                    })
+                    .catch(e => res.status(400).json( e ));
+
+                  }else{
+                    createNewResource(req.body, max, userId, result[0].id)
+                      .then( result => {
+                        // console.log('created resource', result);
+
+                        getResourceByID(result.id)
+                          .then( results => res.status(200).json(results) )
+                          .catch(e => res.status(400).json( e ));
+                      })
+                      .catch(e => res.status(400).json( e ));
+                  }
+                })
+                .catch(e => res.status(400).json( e ));
             })
             .catch(e => {
               console.log("Catch",e)

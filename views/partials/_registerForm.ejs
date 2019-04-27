@@ -1,25 +1,35 @@
-<div id="popup_register" class="popupModal popup-display">
-  <div class="popupBoxWrapper">
-    <div class="popupBoxContent">
-      <h3 class="register-button">Register</h3>
-      <button class="reg_close_button">Close</button>
-      <div class="alert alert-warning" role="alert">Test Error
+<div id="popup_register" class="popupModal popup-display container">
+  <div class="popupBoxWrapper row">
+    <div class="popupBoxContent col-12">
+        <div class="row">
+          <div class="col-6 form_header_wrap">
+            <h3 class="register-button">Register</h3>
+          </div>
+          <div class="col-6 close_Wrap d-flex flex-row-reverse">
+            <button class="reg_close_button">Close</button>
+          </div>
         </div>
-      <form class="register-form">
-          <label for="first_name"><b>First Name</b></label>
-          <input type="text" placeholder="Enter First Name" name="first_name">
-          <label for="last_name"><b>Last Name</b></label>
-          <input type="text" placeholder="Enter Last Name" name="last_name">
-          <label for="username"><b>Username</b></label>
-          <input type="text" placeholder="Enter Username" name="username">
-          <label for="email"><b>Email</b></label>
-          <input type="text" placeholder="Enter Email" name="email">
-          <label for="password"><b>Password</b></label>
-          <input type="password" placeholder="Enter Password" name="password">
-          <label for="avatar"><b>Avatar URL</b></label>
-          <input type="text" placeholder="Enter Avatar URL" name="avatar">
-          <input class="submit_button" type="submit" value="Register">
-      </form>
+        <div class="alert alert-warning" role="alert">Test Error
+        </div>
+        <div class="popup_form_wrap row">
+          <div class="col-12">
+            <form class="register-form">
+                <label for="first_name"><b>First Name</b></label>
+                <input type="text" placeholder="Enter First Name" name="first_name">
+                <label for="last_name"><b>Last Name</b></label>
+                <input type="text" placeholder="Enter Last Name" name="last_name">
+                <label for="username"><b>Username</b></label>
+                <input type="text" placeholder="Enter Username" name="username">
+                <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter Email" name="email">
+                <label for="password"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="password">
+                <label for="avatar"><b>Avatar URL</b></label>
+                <input type="text" placeholder="Enter Avatar URL" name="avatar">
+                <input class="submit_button" type="submit" value="Register">
+            </form>
+          </div>
+        </div>
     </div>
   </div>
 </div>

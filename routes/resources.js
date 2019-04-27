@@ -21,7 +21,7 @@ module.exports = (knex) => {
 
   // get resource main data
   router.route("/:id")
-        .get( helpers.getResources );
+        .get( helpers.getResource );
 
   router.route('/:id')
         .all( middleware.isLoggedIn )

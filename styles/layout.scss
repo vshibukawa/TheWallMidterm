@@ -109,7 +109,12 @@
   /* ******************* */
   /* Main Section Styles */
   /* ******************* */
-  #main_section_wrap {
+  .main_section_wrap {
+
+    .clicked {
+      color:red; // rgb(235, 108, 129);
+      ;
+    }
 
   }
   #page-content-wrapper {

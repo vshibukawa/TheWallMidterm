@@ -32,8 +32,10 @@ module.exports = (knex) => {
     },
 
     updateResource: function  (req, res, token, knex){
+      console.log("Update resource triggered.");
       helpers.getUserIdByToken(token)
         .then(userId => {
+          console.log("started first .then", req.body, req.params)
           const updateResource = {};
           const updateRefrences = {};
 
@@ -57,59 +59,79 @@ module.exports = (knex) => {
             updateRefrences['rate_id'] = req.body.rate_id;
           }
 
+        console.log("before first knex", updateRefrences);
+
           knex
             .select('*')
             .from("resources")
             .where('id', req.params.id)
-            .andWhere('user_id')
             .then(results => {
 
-              if(!updateResource.isEmpty()){
-                if(results.created_by !== userId){ return res.status(400).json( {error: "You cannot edit the resource because you haven't create it"} ) }
+              console.log("inside select * from resources", results, updateResource, updateRefrences);
+
+              if(!(Object.keys(updateResource).length === 0 && updateResource.constructor === Object)){
+                if(results.created_by !== userId){ return res.status(400).send( {error: "You cannot edit the resource because you haven't create it"} ) }
                   knex("resources")
                   .where('id', results[0].id)
                   .update(updateResource)
                   .then(result => {
-                    if(result === 1){
+                    console.log("insid update resources not empty", result);
+                    if(result.length === 1){
                       updateResource.id = results[0].id;
                       updateResource.created_on = results[0].created_on;
                       updateResource.created_by = results[0].created_by;
-                      return res.status(200).json( updateResource );
+                      return res.status(200).send( updateResource );
                     }
                   })
               }
 
-              if(!updateRefrences.isEmpty()){
-                if(results.created_by !== userId){ return res.status(400).json( {error: "You cannot like/rate the resource because you create it"} ) }
+              if(!(Object.keys(updateRefrences).length === 0 && updateRefrences.constructor === Object)){
+                if(results.created_by === userId){ return res.status(400).send( {error: "You cannot like/rate the resource because you create it"} ) }
 
                 knex
                   .select('*')
-                  .from('resources_references')
+                  .from('resources_references AS res')
                   .where('res.id', req.params.id)
                   .then(results => {
+                    console.log("insid update references not empty", results);
 
                     const length = results.length;
                     const referenceFound = results.filter(result => result.user_id === userId);
-                    const maxId = Math.max.apply(Math, results.map(result => result.id ));
+                    let maxId = Math.max.apply(Math, results.map(result => result.id ));
 
                     // create new refrence
                     if(length === 0 || referenceFound.length === 0){
+                      console.log("Creating Reference.")
                       const createReference = {
-                          id: maxId++,
+                          // id: maxId++,
                           resource_id: req.params.id,
                           user_id: userId,
-                          rate_id: updateRefrences.rate_id,
+                          rate_id: 1,
                           liked: false
                         }
-                      if(updateRefrences.liked){ createReference.liked = true; }
+                        if (updateRefrences.hasOwnProperty("rate_id")) {
+                          createReference.rate_id = updateRefrences.rate_id;
+                        } 
 
-                      knex('resources_references')
+                        if(updateRefrences.liked){ createReference.liked = true; }
+
+                      console.log("update references", updateRefrences, "createReferences", createReference);
+                      
+                      knex('resources_references').max('id')
+                      .then(result => result[0].max + 1)
+                      .then( max => {
+                        console.log("max", max);
+                        createReference.id = max
+
+                        knex('resources_references')
                         .insert(createReference)
-                        .then(res.status(200).json( createReference ))
-                        .catch(e => res.status(400).json( {e} ));
+                        .then(() => res.status(200).send( createReference ))                        
+                        .catch(e => res.status(400).send( {e} ));
+                      })
 
                     // update
                     }else if(referenceFound){
+                      console.log("Updating Reference.")
                       const updtReference = {
                           id: maxId++,
                           resource_id: req.params.id,
@@ -127,15 +149,18 @@ module.exports = (knex) => {
                           if(result === 1){
                             updtReference.resource_id = req.params.id;
                             updtReference.user_id = userId;
-                            return res.status(200).json( updtReference );
+                            return res.status(200).send( updtReference );
                           }
-                          res.status(400).json( {error: "Couldn't create resource references"} )
+                          res.status(400).send( {error: "Couldn't create resource references"} )
                         })
                     }
                   })
               }
             })
-            .catch(e => res.status(400).json( {e} ));
+            .catch(e => {
+              console.log(e);
+              res.status(400).send( {e} )
+            });
           }) ;
     },
 

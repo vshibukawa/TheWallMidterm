@@ -466,22 +466,20 @@ $(document).ready(function() {
     
     const resource_id = $('.fullLink',$(this).parent().parent().parent()).data("resource_id");
     
-    // let action = 0;
     if ($(this).hasClass("clicked")) {
       $(this).removeClass("clicked");
-      action = -1;
     } else {
       $(this).addClass("clicked");
-      action = 1;
     }
-    // $.ajax({
-    //   type: 'POST',
-    //   url: "/tweets/" + tweetID,
-    //   data: {tweetID, action}
-    // })
-    // .done( response => {
-    //   $(this).siblings("span").text(response);
-    // });
+    $.ajax({
+      type: 'PUT',
+      url: `api/resources/${resource_id}`,
+      data: {"liked": true}
+    })
+    .done( response => {
+      console.log(response);
+      // $(this).siblings("span").text(response);
+    });
 
   });
 

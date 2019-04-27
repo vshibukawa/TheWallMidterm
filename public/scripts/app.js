@@ -95,7 +95,7 @@ function createResourceElement (input, addClasses) {
 }
 
 function createCommentElement(input) {
-  console.log(input);
+  console.log("create comment element input:",input);
   let toDate = new Date(input['created_on']).toDateString();
   let comSingle = $('<div>').addClass('comment_single');
   let comInfoRow = $('<div>').addClass('row userName');
@@ -351,7 +351,6 @@ $(document).ready(function() {
 
   $(".addComment-form").on("submit", function(event) {
     event.preventDefault();
-    console.log("Submit add comment")
     $(".alert").slideUp("fast");
     $(".alert").text("");
     const resID = $('#popup_fullDetailed').data('resource_id');
@@ -362,7 +361,9 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
-        $(".addRes_close_button").trigger("click");
+        $(".comment_add_button button").trigger("click");
+        $('.comments_wrap').prepend(createCommentElement(result));
+        console.log(result);
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
@@ -408,7 +409,7 @@ $(document).ready(function() {
         .fail( (err) => {
           console.log('Failed', err)
         })
-
+        $(".login_close_button").trigger("click");
       })
       .fail ( response => loginFail( response ))
   });

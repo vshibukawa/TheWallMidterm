@@ -1,4 +1,18 @@
 // Global Variables
+
+function pagePopulate () {
+    $.ajax({
+      type: 'GET',
+      url: `api/resources/?limit=${globalVariables.limit}`
+    })
+    .done( (data) => {
+      console.log(data);
+      renderResources(data);
+    })
+    .fail( (err) => {
+      console.log('Failed', err)
+    })
+  }
 let frontuserInfo = {};
 
 const globalVariables = {
@@ -79,7 +93,7 @@ function createResourceElement (input, addClasses) {
   //Resource Social
   $(resInner).append(resInnerSoc);
   $(resInnerSoc).append(resInnerSocLikes);
-  $(resInnerSocLikes).append('<button class="like-mitten"><i class="fas fa-mitten"></i></button>');  
+  $(resInnerSocLikes).append('<button class="like-mitten"><i class="fas fa-mitten"></i></button>');
   $(resInnerSocLikes).append(resInnerSocLikesTitle);
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
@@ -95,6 +109,9 @@ function createResourceElement (input, addClasses) {
                                   </select>
                                 `);
   $(resInnerSocRateTitle).text('Rating: ' + input['rate']);
+  let rate = input['rate'];
+  if(!input['rate']){ rate = 0; }
+  $(resInnerSocRateTitle).text('Rating: ' + rate);
   $(resInnerSoc).append(resInnerSocCom);
   $(resInnerSocCom).append(resInnerSocComTitle);
   $(resInnerSocComTitle).text('Comments: ' + input['comments']);
@@ -128,7 +145,7 @@ function createCommentElement(input) {
   $(comInfoUserDate).append(comInfoUserDateVal);
   $(comInfoUserDateVal).append(comInfoUserDateValSpan);
   $(comInfoUserDateValSpan).text(toDate);
-  $(comInfoUserDateVal).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
+  // $(comInfoUserDateVal).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
 
   $(comSingle).append(comTextWrap);
   $(comTextWrap).append(comTextInner);
@@ -367,7 +384,9 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
+        $(".addRes-form").trigger("reset");
         $(".addRes_close_button").trigger("click");
+        pagePopulate();
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
@@ -472,8 +491,10 @@ $(document).ready(function() {
       $('#fa-mitten').parent().removeClass('showElement');
       $('.main_section_wrap').empty();
 
+      
+      
+      $('.avatar_wrap .avatar').toggle('.no-display');
       pagePopulate();
-
     })
     .fail ( (response) => {
       console.log("Logout failed!", response);
@@ -500,10 +521,11 @@ $(document).ready(function() {
     .fail ( response => loginFail( response ));
   });
 
+
   $(".main_section_wrap").on("click", "button.like-mitten", function (e) {
-    
+
     const resource_id = $('.fullLink',$(this).parent().parent().parent()).data("resource_id");
-    
+
     if ($(this).hasClass("clicked")) {
       $(this).removeClass("clicked");
     } else {

@@ -78,6 +78,7 @@ function createResourceElement (input, addClasses) {
   //Resource Social
   $(resInner).append(resInnerSoc);
   $(resInnerSoc).append(resInnerSocLikes);
+  $(resInnerSocLikes).append('<button><i class="fas fa-mitten"></i></button>');  
   $(resInnerSocLikes).append(resInnerSocLikesTitle);
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
@@ -381,6 +382,28 @@ $(document).ready(function() {
     $.ajax(`api/resources/?${userInput}&limit=${globalVariables.limit}`)
     .done( (data) => renderResources(data) )
     .fail ( response => loginFail( response ));
+  });
+
+  $(".main_section_wrap").on("click", ".fav-icon", function (e) {
+    // like increment counter, stretch activity in progress
+    let tweetID = $(this).data("tweetid");
+    let action = 0;
+    if ($(this).hasClass("clicked")) {
+      $(this).removeClass("clicked");
+      action = -1;
+    } else {
+      $(this).addClass("clicked");
+      action = 1;
+    }
+    $.ajax({
+      type: 'POST',
+      url: "/tweets/" + tweetID,
+      data: {tweetID, action}
+    })
+    .done( response => {
+      $(this).siblings("span").text(response);
+    });
+
   });
 
   $(function pagePopulate () {

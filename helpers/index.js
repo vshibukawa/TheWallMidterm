@@ -14,7 +14,7 @@ module.exports = (knex) => {
       })
     },
 
-    getUserToken: (req, res) => {    
+    getUserToken: (req, res) => {
       return new Promise(function(resolve, reject){
 
         if(!req.session.user_id || req.session.user_id === ''){
@@ -31,6 +31,17 @@ module.exports = (knex) => {
         }
         resolve( token );
       })
+    },
+
+    getCategoryByDescription: (description) => {
+      return new Promise(function(resolve, reject){
+        knex
+          .select("*")
+          .from("categories")
+          .where('description', 'ilike', `%${description}%`)
+          .then(results => resolve(results))
+          .catch(e => reject({ error: 'Categories not found'}));
+      });
     }
   }
 };

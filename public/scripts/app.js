@@ -95,7 +95,7 @@ function createResourceElement (input, addClasses) {
 }
 
 function createCommentElement(input) {
-  console.log(input);
+  console.log("create comment element input:",input);
   let toDate = new Date(input['created_on']).toDateString();
   let comSingle = $('<div>').addClass('comment_single');
   let comInfoRow = $('<div>').addClass('row userName');
@@ -111,7 +111,7 @@ function createCommentElement(input) {
   $(comSingle).append(comInfoRow);
   $(comInfoRow).append(comInfoUser);
   $(comInfoUser).append(comInfoUserName);
-  $(comInfoUserName).text(input['user_id']);
+  $(comInfoUserName).text(input['username']);
   $(comInfoRow).append(comInfoUserDate);
   $(comInfoUserDate).append(comInfoUserDateVal);
   $(comInfoUserDateVal).append(comInfoUserDateValSpan);
@@ -351,7 +351,6 @@ $(document).ready(function() {
 
   $(".addComment-form").on("submit", function(event) {
     event.preventDefault();
-    console.log("Submit add comment")
     $(".alert").slideUp("fast");
     $(".alert").text("");
     const resID = $('#popup_fullDetailed').data('resource_id');
@@ -362,8 +361,9 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
+        $(".comment_add_button button").trigger("click");
+        $('.comments_wrap').prepend(createCommentElement(result));
         console.log(result);
-        // $(".addRes_close_button").trigger("click");
       })
       .fail ( (response) => {
         $(".alert").slideDown("fast", () => {
@@ -398,10 +398,11 @@ $(document).ready(function() {
         $("#logout_button").parent().removeClass('hideElement');
         $("#profile_button").parent().removeClass('hideElement');
         $("#add_button").parent().removeClass('hideElement');
+        $('.main_section_wrap').empty();
 
         $.ajax({
           type: 'GET',
-          url: `api/users/${frontuserInfo}/resources/?limit=${globalVariables.limit}`,
+          url: `api/users/${frontuserInfo.token}/resources`,
         })
         .done( (data) => {
           renderResources(data);
@@ -409,7 +410,7 @@ $(document).ready(function() {
         .fail( (err) => {
           console.log('Failed', err)
         })
-
+        $(".login_close_button").trigger("click");
       })
       .fail ( response => loginFail( response ))
   });

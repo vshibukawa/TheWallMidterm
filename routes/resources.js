@@ -8,6 +8,7 @@ module.exports = (knex) => {
   const helpers         = require('../helpers/resources')(knex);
   const helpersComments = require('../helpers/comments')(knex);
 
+  // comments
   router.route('/:resourceId/comments/:id')
         .all( middleware.isLoggedIn )
         .all( middleware.isUserComment )

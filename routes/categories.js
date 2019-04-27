@@ -41,7 +41,7 @@ module.exports = (knex) => {
   router.route('/')
         .get( helperCategories.getCategories );
   router.route('/')
-        .all( middleware.isLoggedIn )
+        // .all( middleware.isLoggedIn )
         .post( helperCategories.createCategory );
 
   return router;

@@ -399,10 +399,11 @@ $(document).ready(function() {
         $("#logout_button").parent().removeClass('hideElement');
         $("#profile_button").parent().removeClass('hideElement');
         $("#add_button").parent().removeClass('hideElement');
+        $('.main_section_wrap').empty();
 
         $.ajax({
           type: 'GET',
-          url: `api/users/${frontuserInfo}/resources/?limit=${globalVariables.limit}`,
+          url: `api/users/${frontuserInfo.token}/resources`,
         })
         .done( (data) => {
           renderResources(data);

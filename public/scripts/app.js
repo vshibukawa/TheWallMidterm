@@ -21,6 +21,9 @@ const globalVariables = {
   limit: 20
 };
 
+const getToken = () => $('#sidebar-wrapper').data('token') ;
+const setToken = (token) => $('#sidebar-wrapper').data('token', token);
+
 function renderResources (inputData) {
   for (let resource of inputData) {
     $('.main_section_wrap').prepend(createResourceElement(resource, addClasses))
@@ -266,17 +269,17 @@ $(document).ready(function() {
 
     $.ajax({
       type: 'GET',
-      url: 'api/users/:id'
+      url: 'api/users/'+ getToken()
     })
     .done( (data) => {
       console.log(data);
       // TO BE UPDATED WHEN WE HAVE A SINGLE USER ROUTE TO PULL INFO FROM.
-      $('#popup_profile input[name=first_name]').val(data[0].first_name);
-      $('#popup_profile input[name=last_name]').val(data[0].last_name);
-      $('#popup_profile input[name=username]').val(data[0].username);
-      $('#popup_profile input[name=email]').val(data[0].email);
-      $('#popup_profile input[name=password]').val(data[0].password);
-      $('#popup_profile input[name=avatar]').val(data[0].avatar);
+      $('#popup_profile input[name=first_name]').val(data.first_name);
+      $('#popup_profile input[name=last_name]').val(data.last_name);
+      $('#popup_profile input[name=username]').val(data.username);
+      $('#popup_profile input[name=email]').val(data.email);
+      // $('#popup_profile input[name=password]').val(data.password);
+      $('#popup_profile input[name=avatar]').val(data.avatar);
     })
     .fail( (err) => {
       console.log('Failed', err)
@@ -321,7 +324,7 @@ $(document).ready(function() {
   }
 
   const getUsersCategies = ()=>{
-    const token = $('#sidebar-wrapper').data('token');
+    const token = getToken();
 
     $('.navbar-nav.categories').empty();
 
@@ -353,7 +356,7 @@ $(document).ready(function() {
     $(closeButton).trigger("click");
     $('.avatar_wrap .avatar').attr('src', user.avatar);
     $('.avatar_wrap .avatar').toggle('.no-display');
-    $('#sidebar-wrapper').data('token', user.token);
+    setToken(user.token);
     getUsersCategies();
     $("#register_button").parent().addClass('hideElement');
     $("#login_button").parent().addClass('hideElement');
@@ -382,7 +385,7 @@ $(document).ready(function() {
     $('.sidebar-nav .avatar').attr('src', '');
     $('.sidebar-nav .avatar').toggle('.no-display');
     $('.navbar-nav.categories').empty();
-    $('#sidebar-wrapper').data('token', '');
+    setToken('');
   }
 
   // Handle Register Form Submit
@@ -406,7 +409,7 @@ $(document).ready(function() {
     const userInput =  $(this).serialize();
       $.ajax({
         type: "PUT",
-        url: "/api/users/:id",
+        url: "/api/users/" + getToken(),
         data: userInput
       })
       .done ( () => {
@@ -526,7 +529,7 @@ $(document).ready(function() {
   $('.navbar-nav.categories').on('click', 'a', function(event){
     event.preventDefault();
     const category_id = $(this).data('category_id');
-    const user_token = $('#sidebar-wrapper').data('token');
+    const user_token = getToken();
     $('.main_section_wrap').empty();
     $.ajax(`api/categories/${category_id}/resources/`)
     .done( (data) => renderResources(data) )

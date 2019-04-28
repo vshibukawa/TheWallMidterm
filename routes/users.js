@@ -33,7 +33,7 @@ module.exports = (knex) => {
         .get( helperResources.getUsersReources );
 
   // get user profile info
-  router.route("/:id")
+  router.route("/:userToken")
     .get(helperUsers.getUser)
     .put(helperUsers.updateUser);
 

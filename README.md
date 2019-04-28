@@ -2,7 +2,7 @@
 
 ## Screenshots
 !['Screenshot Of Homepage'](https://github.com/basktballer/TheWallMidterm/blob/master/docs/desktop-home.png)
-!['Screenshot Of Individual Resource'](https://github.com/basktballer/TheWallMidterm/blob/master/docs/addResorce.png)
+!['Screenshot Of Individual Resource'](https://github.com/basktballer/TheWallMidterm/blob/master/docs/individual_resource.png)
 !['Screenshot Of Adding Resource'](https://github.com/basktballer/TheWallMidterm/blob/master/docs/addResorce.png)
 !['Screenshot Of Changing Profile'](https://github.com/basktballer/TheWallMidterm/blob/master/docs/changeProfile.png)
 

@@ -100,7 +100,7 @@ function createResourceElement (input, addClasses) {
 }
 
 function createCommentElement(input) {
-  console.log("create comment element input:",input);
+  console.log("This is the comment input", input)
   let toDate = new Date(input['created_on']).toDateString();
   let comSingle = $('<div>').addClass('comment_single');
   let comInfoRow = $('<div>').addClass('row userName');
@@ -134,11 +134,11 @@ function createCommentElement(input) {
 
 }
 
-function addLikeAndRate(reference, element, input) {
+function addLikeAndRate(reference, element) {
+
+  $(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
+  .resource_minimal_single > .resource_minimal_social_wrap `).data('call_elm', element)
   
-  console.log("These are the references", reference);
-
-
   $('div:nth-child(2)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
   .resource_minimal_single > .resource_minimal_social_wrap `)).append($('<span>').append(`<select class="form-control selcl" name="rates">
   <option></option>
@@ -153,11 +153,9 @@ function addLikeAndRate(reference, element, input) {
   .resource_minimal_single > .resource_minimal_social_wrap`)).prepend($('<button class="like-mitten"><i class="fas fa-mitten"></i></button>'));
 
   if (reference.length === 1) {
-    console.log("This is the reference changing", reference);
     if (reference[0].liked) {
       $('div:nth-child(1) > button.like-mitten',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
       .resource_minimal_single > .resource_minimal_social_wrap`)).addClass("clicked");
-      console.log(`THis is the element, ${element}, ${input}`);
     }
 
     $(`option[value="${reference[0].rate_id}"]`).attr('selected','selected');
@@ -173,15 +171,13 @@ function callIndividualData(resourceID, element) {
     url: "/api/resources/" + ident,
   })
   .then(resource => {
-    $('.popupBoxContent').append(createResourceElement(resource[0], 'individualRes'));
-    console.log("Cll individual", resourceID, element, resource[0]);
-    
+    $('.popupBoxContent').append(createResourceElement(resource[0], 'individualRes'));    
     $.ajax({
       type: "GET",
       url: "/api/resources/" + ident + "/references",
     })
     .then( reference => {
-      addLikeAndRate(reference, element, resource[0]);
+      addLikeAndRate(reference, element);
     })
 
   })
@@ -430,7 +426,7 @@ $(document).ready(function() {
         data: userInput
       })
       .done ( (result) => {
-        console.log(result);
+        // console.log(result);
         $(".addRes-form").trigger("reset");
         $(".addRes_close_button").trigger("click");
         $('.main_section_wrap').prepend(createResourceElement(result[0], 'col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12'))
@@ -454,7 +450,7 @@ $(document).ready(function() {
         $(".addComment-form").trigger("reset");
         $(".comment_add_button button").trigger("click");
         $('.comments_wrap').prepend(createCommentElement(result));
-        console.log(result);
+        console.log("THis is the result of comment", result);
       })
       .fail (response => loginFail( response ))
   });
@@ -566,14 +562,15 @@ $(document).ready(function() {
     })
     .done( response => {
       console.log(response);
+      $(this).parent().parent().data('call_elm').parent().parent().children('.resource_minimal_social_wrap')
+      .children('div:nth-child(1)').children('p').text(`Likes: ${response[0].likes}`);
       $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
+      
     });
 
   });
 
   $("#popup_fullDetailed").on("change", "select", function (e) {
-
-    console.log("Selecting!", this.value);
 
     const resource_id = $('.fullLink',$(this).parent().parent().parent().parent()).data("resource_id");
 
@@ -583,7 +580,8 @@ $(document).ready(function() {
       data: {"rate_id": this.value}
     })
     .done( response => {
-      console.log("Ratings response",response);
+      $(this).parent().parent().parent().data('call_elm').parent().parent().children('.resource_minimal_social_wrap')
+      .children('div:nth-child(2)').children('p').text(`Rating: ${response[0].rate}`);
       $('.rate', $(this).parent().parent()).text(`Rating: ${response[0].rate}`);
     });
 
@@ -594,7 +592,6 @@ $(document).ready(function() {
 
   // initial page populate at first load
   pagePopulate();
-
 
   // THIS FUNCTION IS FOR THE MENU TOGGLE SPECIFICALLY  //
   // ONLY CHANGE WHEN ADDING COLLAPSING SIDEBAR STRETCH //

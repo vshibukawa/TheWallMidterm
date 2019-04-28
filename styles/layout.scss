@@ -459,6 +459,7 @@
   .main_header a.navbar-brand {
     font-size:30px;
     line-height:60px;
+    text-align:left;
   }
 
   #page-content-wrapper .main_section_wrap .single_wrap {
@@ -484,5 +485,9 @@
     .popupBoxWrapper {
       width:40%;
     }
+  }
+
+  .main_header a.navbar-brand {
+    text-align:left;
   }
 }

@@ -1,7 +1,5 @@
 # Midterm Project 'The Wall.'
-
-## Final Product
-
+  
 ## Getting Started
 
 ### Prerequisites

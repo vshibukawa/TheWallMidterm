@@ -13,6 +13,7 @@ function generateRandomString(num) {
 }
 
 module.exports = (knex) => {
+  const helpers = require('../helpers/index')(knex);
 
   return{
 
@@ -35,17 +36,17 @@ module.exports = (knex) => {
             id = results[0].max + 1;        // User Max Number Incrementer, USED FOR DEVELOPMENT ONLY!!!
 
             const token = generateRandomString(6);
-            // const hashedPassword = bcrypt.hashSync(password,10);
+            const hashedPassword = bcrypt.hashSync(password,10);
 
-            const userDetailsArr = [{id: id, first_name: first_name, last_name: last_name , username: username, email: email , password: password, avatar: avatar, token: token }]
+            const userDetailsArr = [{id: id, first_name: first_name, last_name: last_name , username: username, email: email , password: hashedPassword, avatar: avatar, token: token }]
 
             knex('users')
             .insert(userDetailsArr)
             .then(() => {
               req.session.user_id = token; // Currently not posting out to browser cookies
-              return res.status(200).send({id, first_name, last_name, username, email, avatar});
+              return res.status(200).send({id, first_name, last_name, username, email, avatar, token});
             })
-            .catch((err) => { console.log(err); throw err });
+            .catch((err) => { throw err });
           });
         } else {
           if (result[0].username == username) {
@@ -69,14 +70,13 @@ module.exports = (knex) => {
         .then((foundUser) => {
           if(foundUser.length === 0){ return res.status(400).send({ error: "Username not found. Please enter valid username."}); }
 
-          if(password === foundUser[0].password){
-          // if(bcrypt.compareSync( password, req.body.user.password)){
+          // if(password === foundUser[0].password){
+          if(bcrypt.compareSync( password, foundUser[0].password)){
             knex("users")
               .where('username', username)
               .update("token", generateRandomString(6), ['id', 'token'])
               .then((result) => {
                 req.session.user_id = result[0].token;
-                console.log(req.session.user_id);
                 const currentUser = {
                   token: result[0].token,
                   avatar: foundUser[0].avatar
@@ -107,11 +107,11 @@ module.exports = (knex) => {
       knex
         .select("*")
         .from("users")
-        .where("token", req.session.user_id)
+        .where("token", req.params.userToken)
         .limit(1)
-        .then((result) => {
-          // console.log(result);
-          return res.status(200).send(result);
+        .then( result => {
+          const { id, first_name, last_name, username, email, avatar, token } = result[0];
+          return res.status(200).send({ id, first_name, last_name, username, email, avatar, token });
         })
         .catch((err) => {
           return res.status(400).send({ error: "Cannot find user."})
@@ -121,7 +121,6 @@ module.exports = (knex) => {
     updateUser: (req, res) => {
 
       const {first_name, last_name, username, email, password, avatar} = req.body
-
       if (first_name === "" || last_name === "" || username === "" || email === "" || password === "" || avatar === "") {
         return res.status(400).send({ error: "Incomplete form submitted. Please check fields and try again." })
       }
@@ -133,12 +132,13 @@ module.exports = (knex) => {
       knex
         .select('*')
         .from('users')
-        .where("token", req.session.user_id)
+        .where("token", req.params.userToken)
         .limit(1)
         .then((result) => {
           for (let field in req.body) {
             if (result[0][field] !== req.body[field]) {
               changes[field] = req.body[field];
+              if(field === 'password'){ changes[field] = bcrypt.hashSync(req.body[field],10); }
             }
           }
           if (changes.length === 0) {
@@ -149,14 +149,13 @@ module.exports = (knex) => {
             knex
               .select('*')
               .from('users')
-              .whereNot("token", req.session.user_id)
+              .whereNot("token", req.params.userToken)
               .andWhere("username", username).orWhere("email", email)
               .then( (result) => {
-                console.log(result);
+
                 if (result.length === 0 ) {
-                  console.log("No matching users")
                   knex("users")
-                    .where("token", req.session.user_id)
+                    .where("token", req.params.userToken)
                     .update(changes,['id'])
                     .then((result) => {
                       return res.status(200).send(result);
@@ -168,7 +167,7 @@ module.exports = (knex) => {
               }) // end of then
             } else {
              knex("users")
-               .where("token", req.session.user_id)
+               .where("token", req.params.userToken)
                .update(changes,['id'])
                .then((result) => {
                  return res.status(200).send(result);

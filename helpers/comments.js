@@ -49,7 +49,6 @@ module.exports = (knex) => {
                 text,
                 resource_id: req.params.resourceId
               };
-              console.log('newComments :', newComment)
               knex('comments')
                 // .returning(['id', 'user_id', 'created_on', 'text', 'resource_id'])
                 .insert(newComment)

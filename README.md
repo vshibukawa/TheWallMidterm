@@ -1,6 +1,6 @@
 # Midterm Project 'The Wall.'
-
-## Getting Started.
+  
+## Getting Started
 
 ### Prerequisites
 - NODEJS (v8.10.0)
@@ -37,10 +37,23 @@ Visit `http://localhost:8080/`
 
 - Node 5.10.x or above
 - NPM 3.8.x or above
-
-## Features
+- bcrypt 3.0.6 or above
+- body-parser 1.15.2 or above
+- cookie-session 1.3.3 or above
+- dotenv 2.0.0 or above
+- ejs 2.4.1 or above
+- express 4.13.4 or above
+- jquery-bridget 2.0.1 or above
+- knex 0.11.7 or above
+- knex-logger 0.1.0 or above
+- morgan 1.7.0 or above
+- node-sass-middleware 0.9.8 or above
+- pg 6.0.2 or above
+- querystring 0.2.0 or above
+- url 0.11.0 or above
 
 ## Upcoming Features
+
 1. Auto-hiding/collapsable SIDEBAR
 2. The ability to edit/delete comments
 3. Displaying Images/videos via relevant urls being entered (Meta data scraping).

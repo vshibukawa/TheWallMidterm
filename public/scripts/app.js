@@ -132,11 +132,11 @@ function createCommentElement(input) {
 }
 
 function addLikeAndRate(reference) {
-  
+
   console.log("These are the references", reference);
 
-  
-  $('div:nth-child(2)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
+
+  $('div:nth-child(2)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
   .resource_minimal_single > .resource_minimal_social_wrap `)).append($('<span>').append(`<select class="form-control selcl" name="rates">
   <option></option>
   <option value="2">1</option>
@@ -145,17 +145,17 @@ function addLikeAndRate(reference) {
   <option value="5">4</option>
   <option value="6">5</option>
   </select>`));
-  
-  $('div:nth-child(1)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
+
+  $('div:nth-child(1)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
   .resource_minimal_single > .resource_minimal_social_wrap`)).prepend($('<button class="like-mitten"><i class="fas fa-mitten"></i></button>'));
 
   if (reference.length === 1) {
     console.log("This is the reference changing", reference);
     if (reference[0].liked) {
-      $('div:nth-child(1) > button.like-mitten',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
+      $('div:nth-child(1) > button.like-mitten',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
       .resource_minimal_single > .resource_minimal_social_wrap`)).addClass("clicked");
     }
-    
+
     $(`option[value="${reference[0].rate_id}"]`).attr('selected','selected');
   }
 }
@@ -163,6 +163,7 @@ function addLikeAndRate(reference) {
 
 function callIndividualData(resourceID, element ) {
   const ident = $('#popup_fullDetailed').data('resource_id');
+  $('.comments_wrap').empty();
   $.ajax({
     type: "GET",
     url: "/api/resources/" + ident,
@@ -581,7 +582,7 @@ $(document).ready(function() {
     });
 
   });
-  
+
   $("#popup_fullDetailed").on("change", "select", function (e) {
 
     console.log("Selecting!", this.value);

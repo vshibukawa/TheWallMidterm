@@ -166,10 +166,7 @@
   /* ******************* */
   .main_section_wrap {
 
-    .clicked {
-      color:red; // rgb(235, 108, 129);
-      ;
-    }
+
   }
 
   #page-content-wrapper {
@@ -364,6 +361,10 @@
       background:#fff;
       box-shadow:none;
       border:none;
+    }
+    .clicked {
+      color:red; // rgb(235, 108, 129);
+      ;
     }
 
     .single_wrap {

@@ -7,6 +7,7 @@ module.exports = (knex) => {
   const middleware      = require('../middleware/index')(knex);
   const helpers         = require('../helpers/resources')(knex);
   const helpersComments = require('../helpers/comments')(knex);
+  const helpersReferences = require('../helpers/references')(knex);
 
   // comments
   router.route('/:resourceId/comments/:id')
@@ -18,6 +19,11 @@ module.exports = (knex) => {
         // .all( middleware.isLoggedIn )
         .get( helpersComments.getComments )
         .post((req, res) => helpersComments.createComment(req, res, req.session.user_id) );
+
+  router.route("/:resourceId/references")
+        .get( helpersReferences.getReferences);
+      
+
 
   // get resource main data
   router.route("/:id")

@@ -48,8 +48,7 @@ function createResourceElement (input, addClasses) {
   let resInnerSocLikes = $('<div>').addClass('col-3');
   let resInnerSocLikesTitle = $('<p>').addClass('likes');
   let resInnerSocRate = $('<div>').addClass('col-3');
-  let resInnerSocRateTitle = $('<p>');
-  let resInnerSocRateRater = $('<span>');
+  let resInnerSocRateTitle = $('<p>').addClass('rate');
   let resInnerSocCom = $('<div>').addClass('col-3');
   let resInnerSocComTitle = $('<p>');
   let resInnerSocUser = $('<div>').addClass('col-3 user_Controls hideElement');
@@ -78,21 +77,10 @@ function createResourceElement (input, addClasses) {
   //Resource Social
   $(resInner).append(resInnerSoc);
   $(resInnerSoc).append(resInnerSocLikes);
-  $(resInnerSocLikes).append('<button class="like-mitten"><i class="fas fa-mitten"></i></button>');
   $(resInnerSocLikes).append(resInnerSocLikesTitle);
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
   $(resInnerSocRate).append(resInnerSocRateTitle);
-  $(resInnerSocRate).append(resInnerSocRateRater);
-  $(resInnerSocRateRater).append(`
-                                  <select class="form-control selcl" name="rates">
-                                    <option value="2">1</option>
-                                    <option value="3">2</option>
-                                    <option value="4">3</option>
-                                    <option value="5">4</option>
-                                    <option value="6">5</option>
-                                  </select>
-                                `);
   $(resInnerSocRateTitle).text('Rating: ' + input['rate']);
   let rate = input['rate'];
   if(!input['rate']){ rate = 0; }
@@ -130,7 +118,6 @@ function createCommentElement(input) {
   $(comInfoUserDate).append(comInfoUserDateVal);
   $(comInfoUserDateVal).append(comInfoUserDateValSpan);
   $(comInfoUserDateValSpan).text(toDate);
-  // $(comInfoUserDateVal).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
 
   $(comSingle).append(comTextWrap);
   $(comTextWrap).append(comTextInner);
@@ -144,6 +131,35 @@ function createCommentElement(input) {
 
 }
 
+function addLikeAndRate(reference) {
+  
+  console.log("These are the references", reference);
+
+  
+  $('div:nth-child(2)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
+  .resource_minimal_single > .resource_minimal_social_wrap `)).append($('<span>').append(`<select class="form-control selcl" name="rates">
+  <option></option>
+  <option value="2">1</option>
+  <option value="3">2</option>
+  <option value="4">3</option>
+  <option value="5">4</option>
+  <option value="6">5</option>
+  </select>`));
+  
+  $('div:nth-child(1)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
+  .resource_minimal_single > .resource_minimal_social_wrap`)).prepend($('<button class="like-mitten"><i class="fas fa-mitten"></i></button>'));
+
+  if (reference.length === 1) {
+    console.log("This is the reference changing", reference);
+    if (reference[0].liked) {
+      $('div:nth-child(1) > button.like-mitten',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
+      .resource_minimal_single > .resource_minimal_social_wrap`)).addClass("clicked");
+    }
+    
+    $(`option[value="${reference[0].rate_id}"]`).attr('selected','selected');
+  }
+}
+
 
 function callIndividualData(resourceID, element ) {
   const ident = $('#popup_fullDetailed').data('resource_id');
@@ -153,6 +169,15 @@ function callIndividualData(resourceID, element ) {
   })
   .then(resource => {
     $('.popupBoxContent').append(createResourceElement(resource[0], 'individualRes'));
+
+    $.ajax({
+      type: "GET",
+      url: "/api/resources/" + ident + "/references",
+    })
+    .then( reference => {
+      addLikeAndRate(reference);
+    })
+
   })
   .then(() => {
     $.ajax({
@@ -536,7 +561,7 @@ $(document).ready(function() {
   });
 
 
-  $(".main_section_wrap").on("click", "button.like-mitten", function (e) {
+  $("#popup_fullDetailed").on("click", "button.like-mitten", function (e) {
 
     const resource_id = $('.fullLink',$(this).parent().parent().parent()).data("resource_id");
 
@@ -556,8 +581,8 @@ $(document).ready(function() {
     });
 
   });
-
-  $(".main_section_wrap").on("change", "select", function (e) {
+  
+  $("#popup_fullDetailed").on("change", "select", function (e) {
 
     console.log("Selecting!", this.value);
 
@@ -569,16 +594,10 @@ $(document).ready(function() {
       data: {"rate_id": this.value}
     })
     .done( response => {
-      console.log(response);
-      $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
+      console.log("Ratings response",response);
+      $('.rate', $(this).parent().parent()).text(`Rating: ${response[0].rate}`);
     });
 
-
-
-
-    // $('select').on('change', function() {
-    //   alert( this.value );
-    // });
   });
 
 

@@ -257,6 +257,7 @@ $(document).ready(function() {
   });
   $(".addRes_close_button").click(function () {
     $('#popup_addRes').css('display', 'none');
+    getUsersCategies();
   });
 
   $("#profile_button").on('click', function () {
@@ -307,7 +308,7 @@ $(document).ready(function() {
   $(".full_close_button").click(function () {
     $('.individualRes').remove();
     $('#popup_fullDetailed').css('display', 'none');
-
+    getUsersCategies();
   });
 
   // Functions
@@ -411,12 +412,7 @@ $(document).ready(function() {
       .done ( () => {
         $(".prof_close_button").trigger("click");
       })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .fail (response => loginFail( response ))
   });
   $(".addRes-form").on("submit", function(event) {
     event.preventDefault();
@@ -434,12 +430,7 @@ $(document).ready(function() {
         $(".addRes_close_button").trigger("click");
         $('.main_section_wrap').prepend(createResourceElement(result[0], 'col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12'))
       })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .fail (response => loginFail( response ))
   });
 
 
@@ -460,12 +451,7 @@ $(document).ready(function() {
         $('.comments_wrap').prepend(createCommentElement(result));
         console.log(result);
       })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .fail (response => loginFail( response ))
   });
 
 
@@ -518,7 +504,6 @@ $(document).ready(function() {
       $('#sidebar-wrapper nav.navbar h3').addClass('hideElement');
       $('.comment_add_button').addClass('removeElement');
 
-
       $("#register_button").parent().removeClass('hideElement');
       $("#login_button").parent().removeClass('hideElement');
       $("#profile_button").parent().removeClass('showElement');
@@ -529,8 +514,6 @@ $(document).ready(function() {
       $('.comment_add_button').removeClass('showElement');
 
       $('.main_section_wrap').empty();
-
-
 
       $('.avatar_wrap .avatar').toggle('.no-display');
       pagePopulate();

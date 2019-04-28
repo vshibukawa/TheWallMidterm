@@ -69,3 +69,6 @@ Visit `http://localhost:8080/`
 7. Allow comments to have replies
 8. Allowing Resources to have multiple categories.
 9. Full integration of mobile responsiveness.
+
+## Known Issues
+1. The rating and the likes on the wall view doesn't automatically update after changing on the individual view.

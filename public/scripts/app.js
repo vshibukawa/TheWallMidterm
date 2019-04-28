@@ -132,11 +132,11 @@ function createCommentElement(input) {
 }
 
 function addLikeAndRate(reference) {
-  
+
   console.log("These are the references", reference);
 
-  
-  $('div:nth-child(2)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
+
+  $('div:nth-child(2)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
   .resource_minimal_single > .resource_minimal_social_wrap `)).append($('<span>').append(`<select class="form-control selcl" name="rates">
   <option></option>
   <option value="2">1</option>
@@ -145,17 +145,17 @@ function addLikeAndRate(reference) {
   <option value="5">4</option>
   <option value="6">5</option>
   </select>`));
-  
-  $('div:nth-child(1)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
+
+  $('div:nth-child(1)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
   .resource_minimal_single > .resource_minimal_social_wrap`)).prepend($('<button class="like-mitten"><i class="fas fa-mitten"></i></button>'));
 
   if (reference.length === 1) {
     console.log("This is the reference changing", reference);
     if (reference[0].liked) {
-      $('div:nth-child(1) > button.like-mitten',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
+      $('div:nth-child(1) > button.like-mitten',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
       .resource_minimal_single > .resource_minimal_social_wrap`)).addClass("clicked");
     }
-    
+
     $(`option[value="${reference[0].rate_id}"]`).attr('selected','selected');
   }
 }
@@ -163,6 +163,7 @@ function addLikeAndRate(reference) {
 
 function callIndividualData(resourceID, element ) {
   const ident = $('#popup_fullDetailed').data('resource_id');
+  $('.comments_wrap').empty();
   $.ajax({
     type: "GET",
     url: "/api/resources/" + ident,
@@ -353,6 +354,24 @@ $(document).ready(function() {
     $('.avatar_wrap .avatar').toggle('.no-display');
     $('#sidebar-wrapper').data('token', user.token);
     getUsersCategies();
+    $("#register_button").parent().addClass('hideElement');
+    $("#login_button").parent().addClass('hideElement');
+    $("#logout_button").parent().addClass('showElement');
+    $("#profile_button").parent().addClass('showElement');
+    $("#add_button").parent().addClass('showElement');
+    $('#fa-mitten').parent().addClass('showElement');
+    $('#sidebar-wrapper nav.navbar h3').addClass('showElement');
+    $('.comment_add_button').addClass('showElement');
+
+    $("#register_button").parent().removeClass('showElement');
+    $("#login_button").parent().removeClass('showElement');
+    $("#logout_button").parent().removeClass('hideElement');
+    $("#profile_button").parent().removeClass('hideElement');
+    $("#add_button").parent().removeClass('hideElement');
+    $('#fa-mitten').parent().removeClass('hideElement');
+    $('#sidebar-wrapper nav.navbar h3').removeClass('hideElement');
+    $('.comment_add_button').removeClass('hideElement');
+    $('.main_section_wrap').empty();
   }
 
   const loginFail = function(response){
@@ -464,24 +483,6 @@ $(document).ready(function() {
         frontuserInfo = userInfo.currentUser;
         loginSuccess( frontuserInfo, ".login-form", ".login_close_but-un" )
         console.log('User INFO', userInfo)
-        $("#register_button").parent().addClass('hideElement');
-        $("#login_button").parent().addClass('hideElement');
-        $("#logout_button").parent().addClass('showElement');
-        $("#profile_button").parent().addClass('showElement');
-        $("#add_button").parent().addClass('showElement');
-        $('#fa-mitten').parent().addClass('showElement');
-        $('#sidebar-wrapper nav.navbar h3').addClass('showElement');
-        $('.comment_add_button').addClass('showElement');
-
-        $("#register_button").parent().removeClass('showElement');
-        $("#login_button").parent().removeClass('showElement');
-        $("#logout_button").parent().removeClass('hideElement');
-        $("#profile_button").parent().removeClass('hideElement');
-        $("#add_button").parent().removeClass('hideElement');
-        $('#fa-mitten').parent().removeClass('hideElement');
-        $('#sidebar-wrapper nav.navbar h3').removeClass('hideElement');
-        $('.comment_add_button').removeClass('hideElement');
-        $('.main_section_wrap').empty();
 
         $.ajax({
           type: 'GET',
@@ -581,7 +582,7 @@ $(document).ready(function() {
     });
 
   });
-  
+
   $("#popup_fullDetailed").on("change", "select", function (e) {
 
     console.log("Selecting!", this.value);

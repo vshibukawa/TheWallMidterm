@@ -134,13 +134,8 @@ function createCommentElement(input) {
 
 }
 
-<<<<<<< HEAD
 function addLikeAndRate(reference, element, input) {
   
-=======
-function addLikeAndRate(reference) {
-
->>>>>>> a643cdde505098d297ba18d6d0381da487712fee
   console.log("These are the references", reference);
 
 

@@ -581,13 +581,8 @@ $(document).ready(function() {
     });
 
   });
-<<<<<<< HEAD
   
   $("#popup_fullDetailed").on("change", "select", function (e) {
-=======
-
-  $(".main_section_wrap").on("change", "select", function (e) {
->>>>>>> develop
 
     console.log("Selecting!", this.value);
 
@@ -603,15 +598,6 @@ $(document).ready(function() {
       $('.rate', $(this).parent().parent()).text(`Rating: ${response[0].rate}`);
     });
 
-<<<<<<< HEAD
-=======
-
-
-
-    // $('select').on('change', function() {
-    //   alert( this.value );
-    // });
->>>>>>> develop
   });
 
 

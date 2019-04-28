@@ -39,7 +39,7 @@ function createResourceElement (input, addClasses) {
   let resInnerHead = $('<div>').addClass('resource_min_top_wrap');
   let resInnerHeadLink = $('<a>').addClass('fullLink');
   let resInnerHeadTitle = $('<h3>');
-  let resInnerHeadDesc = $('<p>');
+  let resInnerHeadDesc = $('<p>').addClass('description');
   let resInnerHeadCatTitle = $('<h4>');
   let resInnerHeadCat = $('<p>');
 
@@ -68,7 +68,7 @@ function createResourceElement (input, addClasses) {
   $(resInnerHeadLink).attr('href', '#');
   $(resInnerHeadLink).text(input['url'].substr(0, 50) + '...');
   $(resInnerHead).append(resInnerHeadDesc);
-  $(resInnerHeadDesc).text(input['description'].substr(0, 100) + '...');
+  $(resInnerHeadDesc).text(input['description'].substr(0, 50) + '...');
   $(resInnerHead).append(resInnerHeadCatTitle);
   $(resInnerHeadCatTitle).text('Categories');
   $(resInnerHead).append(resInnerHeadCat);
@@ -174,7 +174,7 @@ function renderComments(comments) {
 
 function renderResources (inputData) {
   for (let index of inputData) {
-    $('.main_section_wrap').prepend(createResourceElement(index, 'col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12'))
+    $('.main_section_wrap').prepend(createResourceElement(index, 'col-xl-4 col-lg-6 col-md-6 col-sm-6 col-xs-12'))
   }
 }
 

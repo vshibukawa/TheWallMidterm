@@ -293,10 +293,15 @@
     -webkit-box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
     -moz-box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
     box-shadow: 2px 2px 5px 2px rgba(230,230,230,0.85);
-    min-height:325px;
+    // min-height:456px;
 
     .resource_min_top_wrap {
       overflow-wrap: break-word;
+
+      p.description{
+        min-height:70px;
+        display:block;
+      }
     }
 
     h3, h4 {
@@ -321,6 +326,7 @@
     a {
       display:block;
       margin-bottom:10px;
+      min-height:50px;
     }
     a.resFullLink:hover {
       cursor: pointer;
@@ -328,6 +334,7 @@
     p {
       font-size:16px;
     }
+
 
     .resource_minimal_social_wrap {
       margin-bottom:0px;
@@ -431,3 +438,22 @@
 
 
   }
+
+  // Large devices (desktops, 992px and up)
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  #page-content-wrapper .main_section_wrap .single_wrap:nth-child(-n+3) {
+    margin-top: 30px;
+  }
+  #page-content-wrapper .main_section_wrap .single_wrap:nth-child(-n+2) {
+    margin-top: 0px;
+  }
+  .resource_minimal_single {
+    min-height:350px;
+  }
+
+  #popup_addRes, #popup_register, #popup_profile, #popup_login, #popup_fullDetailed {
+    .popupBoxWrapper {
+      width:50%;
+    }
+  }
+}

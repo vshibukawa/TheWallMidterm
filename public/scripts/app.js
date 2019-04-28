@@ -21,23 +21,6 @@ const globalVariables = {
   limit: 20
 };
 
-function createResourceElement (input) {
-  // Create variables representing the individual elements in a resource.
-  // Resource wrap creation.
-  let resourceWrap = $('<div>').addClass('col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12');
-
-  //Resource Inner Wrap creation
-  let resourceInner = $('<div>').addClass('resource_mininmal_single mr-1 m1-1');
-
-  //Resource Inner Top creation
-  let resourceInnerHead = $('<div>').addClass('resource_min_top_wrap');
-
-  // ****************************************************** //
-  // Appending elements to facilitate the creation of a Resource.
-  // ****************************************************** //
-
-  // Create Resource wrapper
-}
 function renderResources (inputData) {
   for (let resource of inputData) {
     $('.main_section_wrap').prepend(createResourceElement(resource, addClasses))
@@ -65,8 +48,7 @@ function createResourceElement (input, addClasses) {
   let resInnerSocLikes = $('<div>').addClass('col-3');
   let resInnerSocLikesTitle = $('<p>').addClass('likes');
   let resInnerSocRate = $('<div>').addClass('col-3');
-  let resInnerSocRateTitle = $('<p>');
-  let resInnerSocRateRater = $('<span>');
+  let resInnerSocRateTitle = $('<p>').addClass('rate');
   let resInnerSocCom = $('<div>').addClass('col-3');
   let resInnerSocComTitle = $('<p>');
   let resInnerSocUser = $('<div>').addClass('col-3 user_Controls hideElement');
@@ -83,9 +65,9 @@ function createResourceElement (input, addClasses) {
   $(resInnerHeadTitle).text(input['title']);
   $(resInnerHead).append(resInnerHeadLink);
   $(resInnerHeadLink).attr('href', '#');
-  $(resInnerHeadLink).text(input['url'])
+  $(resInnerHeadLink).text(input['url'].substr(0, 50) + '...');
   $(resInnerHead).append(resInnerHeadDesc);
-  $(resInnerHeadDesc).text(input['description']);
+  $(resInnerHeadDesc).text(input['description'].substr(0, 100) + '...');
   $(resInnerHead).append(resInnerHeadCatTitle);
   $(resInnerHeadCatTitle).text('Categories');
   $(resInnerHead).append(resInnerHeadCat);
@@ -95,21 +77,10 @@ function createResourceElement (input, addClasses) {
   //Resource Social
   $(resInner).append(resInnerSoc);
   $(resInnerSoc).append(resInnerSocLikes);
-  $(resInnerSocLikes).append('<button class="like-mitten"><i class="fas fa-mitten"></i></button>');
   $(resInnerSocLikes).append(resInnerSocLikesTitle);
   $(resInnerSocLikesTitle).text('Likes: ' + input['likes']);
   $(resInnerSoc).append(resInnerSocRate);
   $(resInnerSocRate).append(resInnerSocRateTitle);
-  $(resInnerSocRate).append(resInnerSocRateRater);
-  $(resInnerSocRateRater).append(`
-                                  <select class="form-control selcl" name="rates">
-                                    <option value="2">1</option>
-                                    <option value="3">2</option>
-                                    <option value="4">3</option>
-                                    <option value="5">4</option>
-                                    <option value="6">5</option>
-                                  </select>
-                                `);
   $(resInnerSocRateTitle).text('Rating: ' + input['rate']);
   let rate = input['rate'];
   if(!input['rate']){ rate = 0; }
@@ -147,7 +118,6 @@ function createCommentElement(input) {
   $(comInfoUserDate).append(comInfoUserDateVal);
   $(comInfoUserDateVal).append(comInfoUserDateValSpan);
   $(comInfoUserDateValSpan).text(toDate);
-  // $(comInfoUserDateVal).append('<button><i class="fas fa-edit"></i></button><button><i class="fas fa-trash-alt"></i></button>');
 
   $(comSingle).append(comTextWrap);
   $(comTextWrap).append(comTextInner);
@@ -161,15 +131,54 @@ function createCommentElement(input) {
 
 }
 
+function addLikeAndRate(reference) {
+
+  console.log("These are the references", reference);
+
+
+  $('div:nth-child(2)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
+  .resource_minimal_single > .resource_minimal_social_wrap `)).append($('<span>').append(`<select class="form-control selcl" name="rates">
+  <option></option>
+  <option value="2">1</option>
+  <option value="3">2</option>
+  <option value="4">3</option>
+  <option value="5">4</option>
+  <option value="6">5</option>
+  </select>`));
+
+  $('div:nth-child(1)',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
+  .resource_minimal_single > .resource_minimal_social_wrap`)).prepend($('<button class="like-mitten"><i class="fas fa-mitten"></i></button>'));
+
+  if (reference.length === 1) {
+    console.log("This is the reference changing", reference);
+    if (reference[0].liked) {
+      $('div:nth-child(1) > button.like-mitten',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
+      .resource_minimal_single > .resource_minimal_social_wrap`)).addClass("clicked");
+    }
+
+    $(`option[value="${reference[0].rate_id}"]`).attr('selected','selected');
+  }
+}
+
 
 function callIndividualData(resourceID, element ) {
   const ident = $('#popup_fullDetailed').data('resource_id');
+  $('.comments_wrap').empty();
   $.ajax({
     type: "GET",
     url: "/api/resources/" + ident,
   })
   .then(resource => {
     $('.popupBoxContent').append(createResourceElement(resource[0], 'individualRes'));
+
+    $.ajax({
+      type: "GET",
+      url: "/api/resources/" + ident + "/references",
+    })
+    .then( reference => {
+      addLikeAndRate(reference);
+    })
+
   })
   .then(() => {
     $.ajax({
@@ -217,7 +226,8 @@ $(document).ready(function() {
   $("#profile_button").parent().addClass('hideElement');
   $("#add_button").parent().addClass('hideElement');
   $('#fa-mitten').parent().addClass('hideElement');
-
+  $('#sidebar-wrapper nav.navbar h3').addClass('hideElement');
+  $('.comment_add_button').addClass('hideElement');
 
   $("#register_button").parent().removeClass('hideElement');
   $("#login_button").parent().removeClass('hideElement');
@@ -225,6 +235,9 @@ $(document).ready(function() {
   $("#profile_button").parent().removeClass('showElement');
   $("#add_button").parent().removeClass('showElement');
   $('#fa-mitten').parent().removeClass('showElement');
+  $('#sidebar-wrapper nav.navbar h3').removeClass('showElement');
+  $('.comment_add_button').removeClass('showElement');
+
 
   // Handle registration showing JS
   $("#login_button").click(function () {
@@ -341,6 +354,24 @@ $(document).ready(function() {
     $('.avatar_wrap .avatar').toggle('.no-display');
     $('#sidebar-wrapper').data('token', user.token);
     getUsersCategies();
+    $("#register_button").parent().addClass('hideElement');
+    $("#login_button").parent().addClass('hideElement');
+    $("#logout_button").parent().addClass('showElement');
+    $("#profile_button").parent().addClass('showElement');
+    $("#add_button").parent().addClass('showElement');
+    $('#fa-mitten').parent().addClass('showElement');
+    $('#sidebar-wrapper nav.navbar h3').addClass('showElement');
+    $('.comment_add_button').addClass('showElement');
+
+    $("#register_button").parent().removeClass('showElement');
+    $("#login_button").parent().removeClass('showElement');
+    $("#logout_button").parent().removeClass('hideElement');
+    $("#profile_button").parent().removeClass('hideElement');
+    $("#add_button").parent().removeClass('hideElement');
+    $('#fa-mitten').parent().removeClass('hideElement');
+    $('#sidebar-wrapper nav.navbar h3').removeClass('hideElement');
+    $('.comment_add_button').removeClass('hideElement');
+    $('.main_section_wrap').empty();
   }
 
   const loginFail = function(response){
@@ -452,20 +483,6 @@ $(document).ready(function() {
         frontuserInfo = userInfo.currentUser;
         loginSuccess( frontuserInfo, ".login-form", ".login_close_but-un" )
         console.log('User INFO', userInfo)
-        $("#register_button").parent().addClass('hideElement');
-        $("#login_button").parent().addClass('hideElement');
-        $("#logout_button").parent().addClass('showElement');
-        $("#profile_button").parent().addClass('showElement');
-        $("#add_button").parent().addClass('showElement');
-        $('#fa-mitten').parent().addClass('showElement');
-
-        $("#register_button").parent().removeClass('showElement');
-        $("#login_button").parent().removeClass('showElement');
-        $("#logout_button").parent().removeClass('hideElement');
-        $("#profile_button").parent().removeClass('hideElement');
-        $("#add_button").parent().removeClass('hideElement');
-        $('#fa-mitten').parent().removeClass('hideElement');
-        $('.main_section_wrap').empty();
 
         $.ajax({
           type: 'GET',
@@ -498,6 +515,9 @@ $(document).ready(function() {
       $("#add_button").parent().addClass('hideElement');
       $("#logout_button").parent().addClass('hideElement');
       $('#fa-mitten').parent().addClass('hideElement');
+      $('#sidebar-wrapper nav.navbar h3').addClass('hideElement');
+      $('.comment_add_button').addClass('removeElement');
+
 
       $("#register_button").parent().removeClass('hideElement');
       $("#login_button").parent().removeClass('hideElement');
@@ -505,6 +525,9 @@ $(document).ready(function() {
       $("#add_button").parent().removeClass('showElement');
       $("#logout_button").parent().removeClass('showElement');
       $('#fa-mitten').parent().removeClass('showElement');
+      $('#sidebar-wrapper nav.navbar h3').removeClass('showElement');
+      $('.comment_add_button').removeClass('showElement');
+
       $('.main_section_wrap').empty();
 
 
@@ -539,7 +562,7 @@ $(document).ready(function() {
   });
 
 
-  $(".main_section_wrap").on("click", "button.like-mitten", function (e) {
+  $("#popup_fullDetailed").on("click", "button.like-mitten", function (e) {
 
     const resource_id = $('.fullLink',$(this).parent().parent().parent()).data("resource_id");
 
@@ -560,7 +583,7 @@ $(document).ready(function() {
 
   });
 
-  $(".main_section_wrap").on("change", "select", function (e) {
+  $("#popup_fullDetailed").on("change", "select", function (e) {
 
     console.log("Selecting!", this.value);
 
@@ -572,16 +595,10 @@ $(document).ready(function() {
       data: {"rate_id": this.value}
     })
     .done( response => {
-      console.log(response);
-      $('.likes', $(this).parent()).text(`Likes: ${response[0].likes}`);
+      console.log("Ratings response",response);
+      $('.rate', $(this).parent().parent()).text(`Rating: ${response[0].rate}`);
     });
 
-
-
-
-    // $('select').on('change', function() {
-    //   alert( this.value );
-    // });
   });
 
 

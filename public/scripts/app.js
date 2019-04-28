@@ -21,6 +21,9 @@ const globalVariables = {
   limit: 20
 };
 
+const getToken = () => $('#sidebar-wrapper').data('token') ;
+const setToken = (token) => $('#sidebar-wrapper').data('token', token);
+
 function renderResources (inputData) {
   for (let resource of inputData) {
     $('.main_section_wrap').prepend(createResourceElement(resource, addClasses))
@@ -39,7 +42,7 @@ function createResourceElement (input, addClasses) {
   let resInnerHead = $('<div>').addClass('resource_min_top_wrap');
   let resInnerHeadLink = $('<a>').addClass('fullLink');
   let resInnerHeadTitle = $('<h3>');
-  let resInnerHeadDesc = $('<p>');
+  let resInnerHeadDesc = $('<p>').addClass('description');
   let resInnerHeadCatTitle = $('<h4>');
   let resInnerHeadCat = $('<p>');
 
@@ -67,7 +70,7 @@ function createResourceElement (input, addClasses) {
   $(resInnerHeadLink).attr('href', '#');
   $(resInnerHeadLink).text(input['url'].substr(0, 50) + '...');
   $(resInnerHead).append(resInnerHeadDesc);
-  $(resInnerHeadDesc).text(input['description'].substr(0, 100) + '...');
+  $(resInnerHeadDesc).text(input['description'].substr(0, 50) + '...');
   $(resInnerHead).append(resInnerHeadCatTitle);
   $(resInnerHeadCatTitle).text('Categories');
   $(resInnerHead).append(resInnerHeadCat);
@@ -200,7 +203,7 @@ function renderComments(comments) {
 
 function renderResources (inputData) {
   for (let index of inputData) {
-    $('.main_section_wrap').prepend(createResourceElement(index, 'col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12'))
+    $('.main_section_wrap').prepend(createResourceElement(index, 'col-xl-4 col-lg-6 col-md-6 col-sm-6 col-xs-12'))
   }
 }
 
@@ -257,6 +260,7 @@ $(document).ready(function() {
   });
   $(".addRes_close_button").click(function () {
     $('#popup_addRes').css('display', 'none');
+    getUsersCategies();
   });
 
   $("#profile_button").on('click', function () {
@@ -265,17 +269,17 @@ $(document).ready(function() {
 
     $.ajax({
       type: 'GET',
-      url: 'api/users/:id'
+      url: 'api/users/'+ getToken()
     })
     .done( (data) => {
       console.log(data);
       // TO BE UPDATED WHEN WE HAVE A SINGLE USER ROUTE TO PULL INFO FROM.
-      $('#popup_profile input[name=first_name]').val(data[0].first_name);
-      $('#popup_profile input[name=last_name]').val(data[0].last_name);
-      $('#popup_profile input[name=username]').val(data[0].username);
-      $('#popup_profile input[name=email]').val(data[0].email);
-      $('#popup_profile input[name=password]').val(data[0].password);
-      $('#popup_profile input[name=avatar]').val(data[0].avatar);
+      $('#popup_profile input[name=first_name]').val(data.first_name);
+      $('#popup_profile input[name=last_name]').val(data.last_name);
+      $('#popup_profile input[name=username]').val(data.username);
+      $('#popup_profile input[name=email]').val(data.email);
+      // $('#popup_profile input[name=password]').val(data.password);
+      $('#popup_profile input[name=avatar]').val(data.avatar);
     })
     .fail( (err) => {
       console.log('Failed', err)
@@ -307,7 +311,7 @@ $(document).ready(function() {
   $(".full_close_button").click(function () {
     $('.individualRes').remove();
     $('#popup_fullDetailed').css('display', 'none');
-
+    getUsersCategies();
   });
 
   // Functions
@@ -320,7 +324,7 @@ $(document).ready(function() {
   }
 
   const getUsersCategies = ()=>{
-    const token = $('#sidebar-wrapper').data('token');
+    const token = getToken();
 
     $('.navbar-nav.categories').empty();
 
@@ -352,7 +356,7 @@ $(document).ready(function() {
     $(closeButton).trigger("click");
     $('.avatar_wrap .avatar').attr('src', user.avatar);
     $('.avatar_wrap .avatar').toggle('.no-display');
-    $('#sidebar-wrapper').data('token', user.token);
+    setToken(user.token);
     getUsersCategies();
     $("#register_button").parent().addClass('hideElement');
     $("#login_button").parent().addClass('hideElement');
@@ -381,7 +385,7 @@ $(document).ready(function() {
     $('.sidebar-nav .avatar').attr('src', '');
     $('.sidebar-nav .avatar').toggle('.no-display');
     $('.navbar-nav.categories').empty();
-    $('#sidebar-wrapper').data('token', '');
+    setToken('');
   }
 
   // Handle Register Form Submit
@@ -405,18 +409,13 @@ $(document).ready(function() {
     const userInput =  $(this).serialize();
       $.ajax({
         type: "PUT",
-        url: "/api/users/:id",
+        url: "/api/users/" + getToken(),
         data: userInput
       })
       .done ( () => {
         $(".prof_close_button").trigger("click");
       })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .fail (response => loginFail( response ))
   });
   $(".addRes-form").on("submit", function(event) {
     event.preventDefault();
@@ -434,12 +433,7 @@ $(document).ready(function() {
         $(".addRes_close_button").trigger("click");
         $('.main_section_wrap').prepend(createResourceElement(result[0], 'col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12'))
       })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .fail (response => loginFail( response ))
   });
 
 
@@ -460,12 +454,7 @@ $(document).ready(function() {
         $('.comments_wrap').prepend(createCommentElement(result));
         console.log(result);
       })
-      .fail ( (response) => {
-        $(".alert").slideDown("fast", () => {
-          $(".alert").text(getResponseError(response));
-        });
-        console.log(response);
-      })
+      .fail (response => loginFail( response ))
   });
 
 
@@ -518,7 +507,6 @@ $(document).ready(function() {
       $('#sidebar-wrapper nav.navbar h3').addClass('hideElement');
       $('.comment_add_button').addClass('removeElement');
 
-
       $("#register_button").parent().removeClass('hideElement');
       $("#login_button").parent().removeClass('hideElement');
       $("#profile_button").parent().removeClass('showElement');
@@ -529,8 +517,6 @@ $(document).ready(function() {
       $('.comment_add_button').removeClass('showElement');
 
       $('.main_section_wrap').empty();
-
-
 
       $('.avatar_wrap .avatar').toggle('.no-display');
       pagePopulate();
@@ -543,7 +529,7 @@ $(document).ready(function() {
   $('.navbar-nav.categories').on('click', 'a', function(event){
     event.preventDefault();
     const category_id = $(this).data('category_id');
-    const user_token = $('#sidebar-wrapper').data('token');
+    const user_token = getToken();
     $('.main_section_wrap').empty();
     $.ajax(`api/categories/${category_id}/resources/`)
     .done( (data) => renderResources(data) )

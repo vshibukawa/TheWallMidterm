@@ -60,9 +60,12 @@
       padding:10px;
       background-image: url('../images/darkmetal.jpg');
 
+      .navbar-toggler-icon {
+        color:#ffffff;
+      }
       a.navbar-brand {
-        font-size:40px;
-        line-height:60px;
+        font-size:30px;
+        line-height:40px;
         font-family: 'Cinzel Decorative', cursive;
         text-align:center;
         color: #C1C9D9;
@@ -70,7 +73,7 @@
 
         img {
           height:100%;
-          width:60px;
+          width:10%;
           border-radius: 50%;
           box-shadow: 0px 0px 12px rgba( 152, 219, 255, 1);
           margin-right:10px;
@@ -82,6 +85,7 @@
         li {
            line-height: 40px;
            margin:0px;
+           margin-right:20px;
          }
 
          li a {
@@ -120,7 +124,7 @@
 
   /* Sidebar Styles */
   #sidebar-wrapper {
-    width: 0;
+    width: 100%;
     overflow-y: auto;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
@@ -137,6 +141,7 @@
         width:100%;
         border-bottom:1px solid #ffffff;
         text-transform:uppercase;
+        font-size:1.5em;
       }
       margin-bottom:20px;
       ul.navbar-nav {
@@ -155,7 +160,7 @@
             border-radius: 5px;
             text-align: center;
             line-height: 32px;
-            font-size: 20px;
+            font-size: 1em;
           }
         }
       }
@@ -208,7 +213,7 @@
         margin-top:30px;
       }
       .single_wrap:nth-child(-n+3) {
-        margin-top:0px;
+        margin-top:30px;
       }
     }
   }
@@ -226,7 +231,7 @@
    max-width:100%;
 
     .popupBoxWrapper {
-      width:25%;
+      width:100%;
       margin:20px auto;
       background-color:#14486D;
       padding:50px;
@@ -440,21 +445,44 @@
 
   }
 
+  // Small devices (landscape phones, 576px and up)
+  @media (min-width: 576px) and (max-width: 767.98px) {}
+
+  // Medium devices (tablets, 768px and up)
+  @media (min-width: 768px) and (max-width: 991.98px) {}
+
   // Large devices (desktops, 992px and up)
-@media (min-width: 992px) and (max-width: 1199.98px) {
-  #page-content-wrapper .main_section_wrap .single_wrap:nth-child(-n+3) {
-    margin-top: 30px;
+@media (min-width: 992px) and (max-width: 1200px) {
+  .main_header a.navbar-brand img {
+    height:100%;
   }
-  #page-content-wrapper .main_section_wrap .single_wrap:nth-child(-n+2) {
-    margin-top: 0px;
-  }
-  .resource_minimal_single {
-    min-height:350px;
+  .main_header a.navbar-brand {
+    font-size:30px;
+    line-height:60px;
   }
 
+  #page-content-wrapper .main_section_wrap .single_wrap {
+    margin-top:30px;
+  }
+#page-content-wrapper .main_section_wrap .single_wrap:nth-child(-n+2) {
+  margin-top: 30px;
+}
+
+.resource_minimal_single {
+  min-height:350px;
+}
+
+#popup_addRes, #popup_register, #popup_profile, #popup_login, #popup_fullDetailed {
+  .popupBoxWrapper {
+    width:50%;
+  }
+}
+}
+
+@media (min-width: 1200px) {
   #popup_addRes, #popup_register, #popup_profile, #popup_login, #popup_fullDetailed {
     .popupBoxWrapper {
-      width:50%;
+      width:40%;
     }
   }
 }

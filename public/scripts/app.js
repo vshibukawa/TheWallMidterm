@@ -21,23 +21,6 @@ const globalVariables = {
   limit: 20
 };
 
-function createResourceElement (input) {
-  // Create variables representing the individual elements in a resource.
-  // Resource wrap creation.
-  let resourceWrap = $('<div>').addClass('col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-12');
-
-  //Resource Inner Wrap creation
-  let resourceInner = $('<div>').addClass('resource_mininmal_single mr-1 m1-1');
-
-  //Resource Inner Top creation
-  let resourceInnerHead = $('<div>').addClass('resource_min_top_wrap');
-
-  // ****************************************************** //
-  // Appending elements to facilitate the creation of a Resource.
-  // ****************************************************** //
-
-  // Create Resource wrapper
-}
 function renderResources (inputData) {
   for (let resource of inputData) {
     $('.main_section_wrap').prepend(createResourceElement(resource, addClasses))
@@ -217,7 +200,8 @@ $(document).ready(function() {
   $("#profile_button").parent().addClass('hideElement');
   $("#add_button").parent().addClass('hideElement');
   $('#fa-mitten').parent().addClass('hideElement');
-
+  $('#sidebar-wrapper nav.navbar h3').addClass('hideElement');
+  $('.comment_add_button').addClass('hideElement');
 
   $("#register_button").parent().removeClass('hideElement');
   $("#login_button").parent().removeClass('hideElement');
@@ -225,6 +209,9 @@ $(document).ready(function() {
   $("#profile_button").parent().removeClass('showElement');
   $("#add_button").parent().removeClass('showElement');
   $('#fa-mitten').parent().removeClass('showElement');
+  $('#sidebar-wrapper nav.navbar h3').removeClass('showElement');
+  $('.comment_add_button').removeClass('showElement');
+
 
   // Handle registration showing JS
   $("#login_button").click(function () {
@@ -458,6 +445,8 @@ $(document).ready(function() {
         $("#profile_button").parent().addClass('showElement');
         $("#add_button").parent().addClass('showElement');
         $('#fa-mitten').parent().addClass('showElement');
+        $('#sidebar-wrapper nav.navbar h3').addClass('showElement');
+        $('.comment_add_button').addClass('showElement');
 
         $("#register_button").parent().removeClass('showElement');
         $("#login_button").parent().removeClass('showElement');
@@ -465,6 +454,8 @@ $(document).ready(function() {
         $("#profile_button").parent().removeClass('hideElement');
         $("#add_button").parent().removeClass('hideElement');
         $('#fa-mitten').parent().removeClass('hideElement');
+        $('#sidebar-wrapper nav.navbar h3').removeClass('hideElement');
+        $('.comment_add_button').removeClass('hideElement');
         $('.main_section_wrap').empty();
 
         $.ajax({
@@ -498,6 +489,9 @@ $(document).ready(function() {
       $("#add_button").parent().addClass('hideElement');
       $("#logout_button").parent().addClass('hideElement');
       $('#fa-mitten').parent().addClass('hideElement');
+      $('#sidebar-wrapper nav.navbar h3').addClass('hideElement');
+      $('.comment_add_button').addClass('removeElement');
+
 
       $("#register_button").parent().removeClass('hideElement');
       $("#login_button").parent().removeClass('hideElement');
@@ -505,6 +499,9 @@ $(document).ready(function() {
       $("#add_button").parent().removeClass('showElement');
       $("#logout_button").parent().removeClass('showElement');
       $('#fa-mitten').parent().removeClass('showElement');
+      $('#sidebar-wrapper nav.navbar h3').removeClass('showElement');
+      $('.comment_add_button').removeClass('showElement');
+
       $('.main_section_wrap').empty();
 
 

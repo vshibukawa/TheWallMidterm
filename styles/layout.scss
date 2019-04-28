@@ -4,8 +4,9 @@
 
   @import url('https://fonts.googleapis.com/css?family=Cinzel:400,500,600,700,900');
   @import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:400,500,600,700,900');
-  @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
+  @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,600,700');
   @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
+  @import url('https://fonts.googleapis.com/css?family=Raleway:400,500,700');
 
   $h3Font: 'Roboto', sans-serif;
   $headerFont: 'Cinzel', cursive;
@@ -13,6 +14,9 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: $headerFont;
+  }
+  body {
+    background-image: url('../images/darkmetal.jpg');
   }
 
   button:focus {
@@ -45,7 +49,7 @@
 /* ************* */
 
   #wrapper {
-    height:100vh;
+    height:100%;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -122,7 +126,7 @@
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
-    height:100vh;
+    height:100%;
     border-right:2px solid #000;
     background-image: url('../images/darkmetal.jpg');
 
@@ -169,7 +173,7 @@
   }
 
   #page-content-wrapper {
-    height:100vh;
+    min-height:100vh;
     background:
    linear-gradient(
      rgba(193, 201, 217, 0.8),
@@ -178,15 +182,20 @@
    /* bottom, image */
    url('../images/snow.jpg');
    padding-top:15px;
+   padding-bottom:50px;
 
     .search {
        margin-bottom:20px;
 
+       .search-form .col-2, .search-form .col-10 {
+         padding:0px;
+       }
       form {
         width:100%;
+        margin:0px;
 
         input {
-          width:100%;
+          width:98%;
           height:50px;
         }
         .submit_button {
@@ -199,7 +208,10 @@
     }
     .main_section_wrap {
       .single_wrap {
-        margin-top:10px;
+        margin-top:30px;
+      }
+      .single_wrap:nth-child(-n+3) {
+        margin-top:0px;
       }
     }
   }
@@ -288,8 +300,8 @@
     }
 
     h3, h4 {
-      font-family: $headerFont;
-      font-weight:500;
+      font-family: 'Raleway', sans-serif;
+      font-weight:600;
       color:#14486D;
       text-transform: uppercase;
       border-bottom:1px solid #14486D;
@@ -368,9 +380,19 @@
       .comm_add_new {
         display:none;
         margin-bottom: 10px;
+
         textarea {
           width: 100%;
           resize: none;
+        }
+
+        input[type='submit'] {
+          border: none;
+          background: #14486D;
+          color: #ffffff;
+          height: auto;
+          padding: 5px 10px;
+          width: 100%;
         }
       }
       .comm_title_wrap {

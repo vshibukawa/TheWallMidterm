@@ -39,3 +39,14 @@ Visit `http://localhost:8080/`
 - NPM 3.8.x or above
 
 ## Features
+
+## Upcoming Features
+1. Auto-hiding/collapsable SIDEBAR
+2. The ability to edit/delete comments
+3. Displaying Images/videos via relevant urls being entered (Meta data scraping).
+4. Passport/Oauth2 integration
+5. Pregenerated dropdown in the 'Add Resource' window of existing categories.
+6. Image uploading for avatars, not just URL linking
+7. Allow comments to have replies
+8. Allowing Resources to have multiple categories.
+9. Full integration of mobile responsiveness.

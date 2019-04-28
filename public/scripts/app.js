@@ -354,6 +354,24 @@ $(document).ready(function() {
     $('.avatar_wrap .avatar').toggle('.no-display');
     $('#sidebar-wrapper').data('token', user.token);
     getUsersCategies();
+    $("#register_button").parent().addClass('hideElement');
+    $("#login_button").parent().addClass('hideElement');
+    $("#logout_button").parent().addClass('showElement');
+    $("#profile_button").parent().addClass('showElement');
+    $("#add_button").parent().addClass('showElement');
+    $('#fa-mitten').parent().addClass('showElement');
+    $('#sidebar-wrapper nav.navbar h3').addClass('showElement');
+    $('.comment_add_button').addClass('showElement');
+
+    $("#register_button").parent().removeClass('showElement');
+    $("#login_button").parent().removeClass('showElement');
+    $("#logout_button").parent().removeClass('hideElement');
+    $("#profile_button").parent().removeClass('hideElement');
+    $("#add_button").parent().removeClass('hideElement');
+    $('#fa-mitten').parent().removeClass('hideElement');
+    $('#sidebar-wrapper nav.navbar h3').removeClass('hideElement');
+    $('.comment_add_button').removeClass('hideElement');
+    $('.main_section_wrap').empty();
   }
 
   const loginFail = function(response){
@@ -465,24 +483,6 @@ $(document).ready(function() {
         frontuserInfo = userInfo.currentUser;
         loginSuccess( frontuserInfo, ".login-form", ".login_close_but-un" )
         console.log('User INFO', userInfo)
-        $("#register_button").parent().addClass('hideElement');
-        $("#login_button").parent().addClass('hideElement');
-        $("#logout_button").parent().addClass('showElement');
-        $("#profile_button").parent().addClass('showElement');
-        $("#add_button").parent().addClass('showElement');
-        $('#fa-mitten').parent().addClass('showElement');
-        $('#sidebar-wrapper nav.navbar h3').addClass('showElement');
-        $('.comment_add_button').addClass('showElement');
-
-        $("#register_button").parent().removeClass('showElement');
-        $("#login_button").parent().removeClass('showElement');
-        $("#logout_button").parent().removeClass('hideElement');
-        $("#profile_button").parent().removeClass('hideElement');
-        $("#add_button").parent().removeClass('hideElement');
-        $('#fa-mitten').parent().removeClass('hideElement');
-        $('#sidebar-wrapper nav.navbar h3').removeClass('hideElement');
-        $('.comment_add_button').removeClass('hideElement');
-        $('.main_section_wrap').empty();
 
         $.ajax({
           type: 'GET',

@@ -35,9 +35,9 @@ module.exports = (knex) => {
             id = results[0].max + 1;        // User Max Number Incrementer, USED FOR DEVELOPMENT ONLY!!!
 
             const token = generateRandomString(6);
-            // const hashedPassword = bcrypt.hashSync(password,10);
+            const hashedPassword = bcrypt.hashSync(password,10);
 
-            const userDetailsArr = [{id: id, first_name: first_name, last_name: last_name , username: username, email: email , password: password, avatar: avatar, token: token }]
+            const userDetailsArr = [{id: id, first_name: first_name, last_name: last_name , username: username, email: email , password: hashedPassword, avatar: avatar, token: token }]
 
             knex('users')
             .insert(userDetailsArr)
@@ -69,8 +69,8 @@ module.exports = (knex) => {
         .then((foundUser) => {
           if(foundUser.length === 0){ return res.status(400).send({ error: "Username not found. Please enter valid username."}); }
 
-          if(password === foundUser[0].password){
-          // if(bcrypt.compareSync( password, req.body.user.password)){
+          // if(password === foundUser[0].password){
+          if(bcrypt.compareSync( password, foundUser[0].password)){
             knex("users")
               .where('username', username)
               .update("token", generateRandomString(6), ['id', 'token'])
@@ -139,6 +139,7 @@ module.exports = (knex) => {
           for (let field in req.body) {
             if (result[0][field] !== req.body[field]) {
               changes[field] = req.body[field];
+              if(field === 'password'){ changes[field] = bcrypt.hashSync(password,10); }
             }
           }
           if (changes.length === 0) {
@@ -155,6 +156,7 @@ module.exports = (knex) => {
                 console.log(result);
                 if (result.length === 0 ) {
                   console.log("No matching users")
+
                   knex("users")
                     .where("token", req.session.user_id)
                     .update(changes,['id'])

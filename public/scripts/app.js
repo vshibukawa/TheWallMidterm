@@ -131,7 +131,7 @@ function createCommentElement(input) {
 
 }
 
-function addLikeAndRate(reference) {
+function addLikeAndRate(reference, element, input) {
   
   console.log("These are the references", reference);
 
@@ -154,6 +154,7 @@ function addLikeAndRate(reference) {
     if (reference[0].liked) {
       $('div:nth-child(1) > button.like-mitten',$(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap > 
       .resource_minimal_single > .resource_minimal_social_wrap`)).addClass("clicked");
+      console.log(`THis is the element, ${element}, ${input}`);
     }
     
     $(`option[value="${reference[0].rate_id}"]`).attr('selected','selected');
@@ -161,7 +162,7 @@ function addLikeAndRate(reference) {
 }
 
 
-function callIndividualData(resourceID, element ) {
+function callIndividualData(resourceID, element) {
   const ident = $('#popup_fullDetailed').data('resource_id');
   $.ajax({
     type: "GET",
@@ -169,13 +170,14 @@ function callIndividualData(resourceID, element ) {
   })
   .then(resource => {
     $('.popupBoxContent').append(createResourceElement(resource[0], 'individualRes'));
-
+    console.log("Cll individual", resourceID, element, resource[0]);
+    
     $.ajax({
       type: "GET",
       url: "/api/resources/" + ident + "/references",
     })
     .then( reference => {
-      addLikeAndRate(reference);
+      addLikeAndRate(reference, element, resource[0]);
     })
 
   })

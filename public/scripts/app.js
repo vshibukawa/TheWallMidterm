@@ -134,7 +134,13 @@ function createCommentElement(input) {
 
 }
 
-function addLikeAndRate(reference, element) {
+function addLikeAndRateandLink(reference, element, input) {
+
+  $(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
+  .resource_minimal_single > .resource_min_top_wrap > a`).attr('href', input['url']);
+  $(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
+  .resource_minimal_single > .resource_min_top_wrap > a`).attr('target', "_blank");
+
 
   $(`#popup_fullDetailed > .popupBoxWrapper > .popupBoxContent > .single_wrap >
   .resource_minimal_single > .resource_minimal_social_wrap `).data('call_elm', element)
@@ -177,7 +183,7 @@ function callIndividualData(resourceID, element) {
       url: "/api/resources/" + ident + "/references",
     })
     .then( reference => {
-      addLikeAndRate(reference, element);
+      addLikeAndRateandLink(reference, element, resource[0]);
     })
 
   })
@@ -260,6 +266,22 @@ $(document).ready(function() {
     $('#popup_addRes').css('display', 'none');
     getUsersCategies();
   });
+
+
+  $('.myResourcesButton').on('click', function() {
+    const token = getToken();
+    $.ajax({
+      type: 'GET',
+      url: `api/users/${token}/resources`,
+    })
+    .done( (data) => {
+      $('.main_section_wrap').empty();
+      renderResources(data);
+    })
+    .fail( (err) => {
+      console.log('My resources click Failed', err)
+    })
+  })
 
   $("#profile_button").on('click', function () {
     $('#popup_profile').css('display', 'block');

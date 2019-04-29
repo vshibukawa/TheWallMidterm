@@ -71,4 +71,5 @@ Visit `http://localhost:8080/`
 9. Full integration of mobile responsiveness.
 
 ## Known Issues
-1. The rating and the likes on the wall view doesn't automatically update after changing on the individual view.
+
+1. The comment counter doesn't live update after adding a comment.

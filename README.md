@@ -76,4 +76,4 @@ Visit `http://localhost:8080/`
 
 ## ERD
 
-!['ERD image'](./public/images/ERD.jgg)
+!['ERD image'](./public/images/ERD.jpg)

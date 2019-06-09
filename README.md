@@ -73,3 +73,7 @@ Visit `http://localhost:8080/`
 ## Known Issues
 
 1. The comment counter doesn't live update after adding a comment.
+
+## ERD
+
+!['ERD image'](./public/images/ERD.png)
